@@ -1,0 +1,427 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Product Details — ShopVerse</title>
+  <link rel="icon" type="image/svg+xml" href="/favicon.svg">
+  <link rel="stylesheet" href="/css/style.css">
+  <style>
+    .container-amz {
+      max-width: 1500px;
+      margin: 0 auto;
+      padding: 0 1rem;
+    }
+    .amz-layout {
+      display: grid;
+      grid-template-columns: 60px 500px 1fr 300px;
+      gap: 2rem;
+      margin-top: 1rem;
+    }
+    @media (max-width: 1200px) {
+      .amz-layout { grid-template-columns: 60px 400px 1fr 250px; }
+    }
+    @media (max-width: 992px) {
+      .amz-layout { grid-template-columns: 1fr; }
+      .thumbnail-col { flex-direction: row !important; overflow-x: auto; }
+      .buybox-col { margin-top: 2rem; }
+    }
+    
+    .thumbnail-col {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+    .thumb-img {
+      width: 60px;
+      height: 60px;
+      object-fit: cover;
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      cursor: pointer;
+    }
+    .thumb-img.active {
+      border: 2px solid var(--accent);
+      box-shadow: 0 0 5px rgba(108, 99, 255, 0.5);
+    }
+    
+    .main-img-col {
+      position: relative;
+    }
+    .main-img {
+      width: 100%;
+      height: 500px;
+      object-fit: contain;
+    }
+    
+    .details-col h1 {
+      font-size: 1.5rem;
+      font-weight: 500;
+      margin-bottom: 0.2rem;
+      line-height: 1.3;
+      color: var(--text-primary);
+    }
+    .brand-link {
+      color: #007185;
+      text-decoration: none;
+      font-size: 0.9rem;
+    }
+    .brand-link:hover { text-decoration: underline; color: #c45500; }
+    
+    .rating-row {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      border-bottom: 1px solid var(--border);
+      padding-bottom: 1rem;
+      margin-bottom: 1rem;
+      margin-top: 0.5rem;
+    }
+    .star-amz { color: #FFA41C; font-size: 1.2rem; }
+    
+    .price-row { margin-bottom: 0.5rem; display: flex; align-items: baseline; gap: 0.5rem; }
+    .price-large { font-size: 1.8rem; font-weight: 500; color: #B12704; }
+    .price-mrp { text-decoration: line-through; color: #565959; font-size: 0.9rem; }
+    
+    .about-item { margin-top: 1.5rem; border-top: 1px solid var(--border); padding-top: 1.5rem; }
+    .about-item h3 { font-size: 1.1rem; margin-bottom: 0.5rem; font-weight: 700; color: var(--text-primary); }
+    .about-item ul { padding-left: 1.2rem; }
+    .about-item li { margin-bottom: 0.4rem; font-size: 0.95rem; line-height: 1.5; color: var(--text-primary); }
+    
+    .buybox-col {
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 1.2rem;
+      background: var(--bg-card);
+      height: fit-content;
+    }
+    .delivery-info { font-size: 0.9rem; margin-bottom: 1rem; line-height: 1.4; color: var(--text-primary); }
+    .in-stock { color: #007600; font-size: 1.1rem; font-weight: 500; margin-bottom: 1rem; }
+    
+    .buy-btn-yellow {
+      background: #FFD814;
+      border: 1px solid #FCD200;
+      border-radius: 20px;
+      width: 100%;
+      padding: 0.6rem;
+      margin-bottom: 0.5rem;
+      cursor: pointer;
+      font-size: 0.95rem;
+      color: #0F1111;
+      transition: background 0.2s;
+    }
+    .buy-btn-yellow:hover { background: #F7CA00; }
+    
+    .buy-btn-orange {
+      background: #FFA41C;
+      border: 1px solid #FF8F00;
+      border-radius: 20px;
+      width: 100%;
+      padding: 0.6rem;
+      margin-bottom: 1rem;
+      cursor: pointer;
+      font-size: 0.95rem;
+      color: #0F1111;
+      transition: background 0.2s;
+    }
+    .buy-btn-orange:hover { background: #FA8900; }
+    
+    .secure-tx {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      color: #007185;
+      font-size: 0.9rem;
+      margin-top: 1rem;
+      cursor: pointer;
+    }
+    .secure-tx:hover { color: #c45500; }
+
+    .qty-select {
+      width: 100%;
+      padding: 0.4rem;
+      border-radius: 8px;
+      border: 1px solid var(--border);
+      background: var(--bg-secondary);
+      color: var(--text-primary);
+      margin-bottom: 1.5rem;
+    }
+
+    .wishlist-link {
+      display: block;
+      width: 100%;
+      text-align: center;
+      padding: 0.5rem;
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      color: var(--text-primary);
+      text-decoration: none;
+      font-size: 0.9rem;
+      margin-top: 1rem;
+      background: var(--bg-secondary);
+    }
+    .wishlist-link.active {
+      color: #ff4757;
+      border-color: #ff4757;
+      background: rgba(255, 71, 87, 0.1);
+    }
+  </style>
+</head>
+<body>
+  <div id="navbar-root"></div>
+  
+  <!-- Breadcrumb -->
+  <div style="background: var(--bg-card); padding: 0.5rem 0; border-bottom: 1px solid var(--border);">
+    <div class="container-amz">
+      <a href="/" style="color: var(--text-muted); text-decoration: none; font-size: 0.85rem;">&larr; Back to results</a>
+    </div>
+  </div>
+
+  <div class="container-amz" style="margin-top:2rem;">
+    <div class="loading" id="loading">
+      <div class="dot"></div><div class="dot"></div><div class="dot"></div>
+    </div>
+    <div id="product-content" style="display:none"></div>
+  </div>
+
+  <script src="/js/main.js?v=17"></script>
+  <script>
+    let currentProduct = null;
+
+    async function init() {
+      document.getElementById('navbar-root').innerHTML = renderNavbar();
+      updateNavAuth();
+      updateCartCount();
+      await fetchUserWishlist(); 
+
+      const id = new URLSearchParams(window.location.search).get('id');
+      if (!id) { window.location = '/'; return; }
+
+      try {
+        const res = await fetch(`${API}/products/${id}`);
+        if (!res.ok) throw new Error();
+        currentProduct = await res.json();
+        
+        // Use default placeholders if new fields aren't present
+        currentProduct.images = currentProduct.images || [currentProduct.image];
+        currentProduct.brand = currentProduct.brand || 'Generic Brand';
+        currentProduct.sold_by = currentProduct.sold_by || 'ShopVerse Retail';
+        currentProduct.features = currentProduct.features || [currentProduct.description];
+
+        document.title = `${currentProduct.name} — ShopVerse`;
+        document.getElementById('loading').style.display = 'none';
+        
+        renderProductLayout();
+      } catch {
+        document.getElementById('loading').innerHTML = '<div class="empty-state"><div class="empty-icon">🤷</div><div class="empty-title">Product not found</div><a href="/" class="btn btn-primary" style="margin-top:1rem">Go Home</a></div>';
+      }
+    }
+
+    function renderProductLayout() {
+      const p = currentProduct;
+      const isWished = userWishlistIds.includes(p.id);
+      
+      const content = document.getElementById('product-content');
+      content.style.display = 'block';
+      
+      // Calculate delivery date (3 days from now)
+      const dDate = new Date();
+      dDate.setDate(dDate.getDate() + 3);
+      const deliveryStr = dDate.toLocaleDateString('en-IN', { weekday: 'long', day: 'numeric', month: 'short' });
+
+      content.innerHTML = `
+        <div class="amz-layout">
+          <!-- Thumbnails -->
+          <div class="thumbnail-col" id="thumbnail-gallery">
+            ${p.images.map((img, i) => `
+              <img src="${img}" class="thumb-img ${i === 0 ? 'active' : ''}" onmouseover="setMainImage('${img}', this)">
+            `).join('')}
+          </div>
+
+          <!-- Main Image -->
+          <div class="main-img-col">
+            <button class="wishlist-btn ${isWished ? 'active' : ''}" style="position: absolute; top: 10px; right: 10px; width: 45px; height: 45px; font-size: 1.5rem; z-index: 10;" onclick="toggleWishlist(${p.id}, this)">
+              ${isWished ? '❤️' : '🤍'}
+            </button>
+            <img src="${p.images[0]}" id="main-image-display" class="main-img" onerror="this.src='https://via.placeholder.com/600x450/1e1e2a/6c63ff?text=Product'">
+          </div>
+
+          <!-- Product Details -->
+          <div class="details-col">
+            <h1>${p.name}</h1>
+            <a href="#" class="brand-link">Visit the ${p.brand} Store</a>
+            
+            <div class="rating-row">
+              <span class="star-amz">★★★★½</span>
+              <span style="color: #007185; font-size: 0.9rem; cursor:pointer;">${p.rating} (${p.reviews.toLocaleString()} ratings)</span>
+              ${p.is_deal_of_day ? '<span style="background: #232F3E; color: white; padding: 2px 8px; font-size: 0.75rem;">Amazon&apos;s Choice</span>' : ''}
+            </div>
+
+            <div class="price-row">
+              ${p.discount_percentage ? `<span style="color: #cc0c39; font-size: 1.8rem;">-${p.discount_percentage}%</span>` : ''}
+              <span class="price-large" style="margin-left: 0.5rem;">${formatPrice(p.price)}</span>
+            </div>
+            ${p.original_price ? `<div class="price-mrp">M.R.P.: ${formatPrice(p.original_price)}</div>` : ''}
+            <div style="font-size: 0.9rem; margin-top: 0.5rem;">Inclusive of all taxes</div>
+            <div style="font-size: 0.9rem; margin-top: 0.2rem;"><strong>EMI</strong> starts at ₹${Math.round(p.price/12)}. No Cost EMI available <span style="color:#007185">EMI options</span></div>
+
+            <div class="about-item">
+              <h3>About this item</h3>
+              <ul>
+                ${p.features.map(f => `<li>${f}</li>`).join('')}
+              </ul>
+            </div>
+            
+            <div style="margin-top: 1rem; border-top: 1px solid var(--border); padding-top: 1rem;">
+              <span style="font-size:0.9rem; font-weight:700;">Report an issue with this product</span>
+            </div>
+          </div>
+
+          <!-- Buy Box -->
+          <div class="buybox-col">
+            <div class="price-large" style="margin-bottom: 1rem;">${formatPrice(p.price)}</div>
+            
+            <div class="delivery-info">
+              FREE delivery <strong>${deliveryStr}</strong>. Details
+            </div>
+            <div class="delivery-info" style="color:#007185; display:flex; align-items:center; gap:0.5rem; cursor:pointer;">
+              📍 Delivering to New Delhi 110005 - Update location
+            </div>
+
+            <div class="in-stock">${p.stock > 10 ? 'In stock' : `Only ${p.stock} left in stock.`}</div>
+
+            <select class="qty-select" id="amz-qty">
+              <option value="1">Quantity: 1</option>
+              <option value="2">Quantity: 2</option>
+              <option value="3">Quantity: 3</option>
+              <option value="4">Quantity: 4</option>
+              <option value="5">Quantity: 5</option>
+            </select>
+
+            <button class="buy-btn-yellow" onclick="handleAmzAddToCart(${p.id})">Add to Cart</button>
+            <button class="buy-btn-orange" onclick="handleAmzBuyNow(${p.id})">Buy Now</button>
+
+            <div class="secure-tx">
+              🔒 Secure transaction
+            </div>
+
+            <div style="margin-top: 1rem; font-size: 0.85rem; color: var(--text-secondary);">
+              <table style="width:100%; margin-bottom:0.5rem;">
+                <tr><td style="width: 40%">Ships from</td><td>ShopVerse Fulfilled</td></tr>
+                <tr><td>Sold by</td><td style="color:#007185">${p.sold_by}</td></tr>
+              </table>
+            </div>
+
+            <button class="wishlist-link ${isWished ? 'active' : ''}" onclick="toggleWishlist(${p.id}, this); setTimeout(() => init(), 500);">
+              ${isWished ? 'Remove from Wishlist' : 'Add to Wish List'}
+            </button>
+          </div>
+        </div>
+
+        <!-- Frequently Bought Together -->
+        <hr style="border:0; border-top: 1px solid var(--border); margin: 3rem 0;">
+        <div class="section-title">Frequently bought together</div>
+        <div id="frequently-bought" style="display:flex; gap: 2rem; align-items:center; margin-bottom: 3rem; flex-wrap:wrap;">
+           <!-- Populated via JS -->
+        </div>
+
+        <hr style="border:0; border-top: 1px solid var(--border); margin: 3rem 0;">
+        <div class="horizontal-scroll-container">
+          <div class="section-title">Explore more from across the store</div>
+          <div class="horizontal-scroll-row" id="similar-products">
+            <div class="dot"></div>
+          </div>
+        </div>
+      `;
+
+      fetchSimilarProducts(p.category, p.id);
+    }
+
+    function setMainImage(url, thumbElement) {
+      document.getElementById('main-image-display').src = url;
+      // remove active class from all
+      document.querySelectorAll('.thumb-img').forEach(el => el.classList.remove('active'));
+      thumbElement.classList.add('active');
+    }
+
+    async function handleAmzAddToCart(id) {
+      const q = parseInt(document.getElementById('amz-qty').value);
+      if (!isLoggedIn()) {
+        window.location = '/login';
+        return false;
+      }
+      try {
+        const res = await fetch(`${API}/cart/add`, {
+          method: 'POST',
+          headers: { ...getHeaders(), 'Content-Type': 'application/json' },
+          body: JSON.stringify({ product_id: id, quantity: q })
+        });
+        if (res.ok) {
+          showToast('Added to Cart!');
+          updateCartCount();
+          return true;
+        } else {
+          showToast('Failed to add to cart', 'error');
+          return false;
+        }
+      } catch {
+        showToast('Network error', 'error');
+        return false;
+      }
+    }
+
+    async function handleAmzBuyNow(id) {
+      const success = await handleAmzAddToCart(id);
+      if (success) {
+        window.location = '/checkout';
+      }
+    }
+
+    async function fetchSimilarProducts(category, currentId) {
+      try {
+        const res = await fetch(`${API}/products`);
+        const all = await res.json();
+        
+        // Frequent bought logic (just grab 2 random products from same category)
+        const others = all.filter(p => p.id !== currentId);
+        if (others.length >= 2) {
+          const combo = [currentProduct, others[0], others[1]];
+          const totalPrice = combo.reduce((sum, item) => sum + item.price, 0);
+          
+          let comboHTML = `
+            <div style="display:flex; gap:1rem; align-items:center;">
+              ${combo.map((item, idx) => `
+                <div style="text-align:center;">
+                  <img src="${item.images ? item.images[0] : item.image}" style="width:120px; height:120px; object-fit:contain; border:1px solid var(--border); padding:0.5rem; border-radius:8px; background:white;">
+                  <div style="margin-top:0.5rem; display:flex; align-items:center; gap:0.5rem;">
+                    <input type="checkbox" checked disabled>
+                    <span style="font-weight:700; color:#B12704;">${formatPrice(item.price)}</span>
+                  </div>
+                </div>
+                ${idx < 2 ? '<span style="font-size:2rem; color:var(--text-muted)">+</span>' : ''}
+              `).join('')}
+            </div>
+            <div style="border-left: 1px solid var(--border); padding-left: 2rem; display:flex; flex-direction:column; gap:0.5rem;">
+              <div style="font-size: 1.1rem;">Total price: <span style="font-weight:700; color:#B12704;">${formatPrice(totalPrice)}</span></div>
+              <button class="buy-btn-yellow" style="width:200px; padding:0.4rem;" onclick="showToast('Added bundle to cart!')">Add all three to Cart</button>
+            </div>
+          `;
+          document.getElementById('frequently-bought').innerHTML = comboHTML;
+        }
+
+        // Similar products logic
+        const similar = all.filter(p => p.category === category && p.id !== currentId).slice(0, 8);
+        if (similar.length > 0) {
+          document.getElementById('similar-products').innerHTML = similar.map(createProductCardHTML).join('');
+        } else {
+          document.getElementById('similar-products').innerHTML = '<p style="color:var(--text-secondary)">No similar products found.</p>';
+        }
+      } catch (e) {
+        document.getElementById('similar-products').innerHTML = '';
+      }
+    }
+
+    document.addEventListener('DOMContentLoaded', init);
+  </script>
+</body>
+</html>

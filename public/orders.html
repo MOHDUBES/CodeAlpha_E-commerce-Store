@@ -1,0 +1,333 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>My Orders — ShopVerse</title>
+  <link rel="icon" type="image/svg+xml" href="/favicon.svg">
+  <link rel="stylesheet" href="/css/style.css">
+  <style>
+    .order-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      margin-bottom: 2rem;
+      overflow: hidden;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+    }
+    .order-header {
+      background: rgba(108, 99, 255, 0.05);
+      padding: 1.5rem;
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 1rem;
+    }
+    .order-item-row {
+      display: flex;
+      gap: 1.5rem;
+      padding: 1.5rem;
+      border-bottom: 1px solid var(--border);
+      align-items: center;
+    }
+    .order-item-row:last-child {
+      border-bottom: none;
+    }
+    .order-item-img {
+      width: 90px;
+      height: 90px;
+      object-fit: cover;
+      border-radius: 12px;
+      background: var(--bg-secondary);
+    }
+    .order-footer {
+      padding: 1rem 1.5rem;
+      background: var(--bg-secondary);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 1rem;
+    }
+    .info-label {
+      font-size: 0.8rem;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      margin-bottom: 0.2rem;
+    }
+    .info-value {
+      font-weight: 600;
+      color: var(--text-primary);
+    }
+    .track-container {
+      margin-top: 1.5rem;
+      padding: 1.5rem;
+      background: var(--bg-secondary);
+      border-radius: 8px;
+    }
+    .track-bar {
+      display: flex;
+      justify-content: space-between;
+      position: relative;
+      margin-bottom: 2rem;
+    }
+    .track-bar::before {
+      content: '';
+      position: absolute;
+      top: 15px;
+      left: 0;
+      width: 100%;
+      height: 4px;
+      background: var(--border);
+      z-index: 1;
+    }
+    .track-bar-fill {
+      position: absolute;
+      top: 15px;
+      left: 0;
+      height: 4px;
+      background: var(--accent);
+      z-index: 2;
+      transition: width 0.5s ease;
+    }
+    .track-step {
+      position: relative;
+      z-index: 3;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 0.5rem;
+    }
+    .track-icon {
+      width: 34px;
+      height: 34px;
+      border-radius: 50%;
+      background: var(--bg-card);
+      border: 3px solid var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.9rem;
+      color: var(--text-muted);
+    }
+    .track-step.active .track-icon {
+      background: var(--accent);
+      border-color: var(--accent);
+      color: white;
+    }
+    .track-label {
+      font-size: 0.85rem;
+      font-weight: 600;
+      color: var(--text-secondary);
+    }
+    .track-step.active .track-label {
+      color: var(--text-primary);
+    }
+    .track-details {
+      font-size: 0.9rem;
+      color: var(--text-secondary);
+      background: var(--bg-card);
+      padding: 1rem;
+      border-radius: 6px;
+      border-left: 4px solid var(--accent);
+    }
+  </style>
+</head>
+<body>
+  <div id="navbar-root"></div>
+
+  <div class="page-header container" style="padding-top: 2rem;">
+    <div style="margin-bottom: 1rem;"><a href="/" class="btn btn-outline btn-sm">&larr; Back to Shopping</a></div>
+    <h1 class="page-title">📦 My Orders</h1>
+    <p class="page-subtitle">Track and manage your recent purchases</p>
+  </div>
+
+  <div class="container" style="max-width: 1000px; padding-bottom: 4rem;">
+    <div class="loading" id="loading">
+      <div class="dot"></div><div class="dot"></div><div class="dot"></div>
+    </div>
+
+    <div id="orders-list" style="display:none"></div>
+
+    <div id="empty-orders" class="empty-state" style="display:none; padding: 4rem 1rem;">
+      <div class="empty-icon" style="font-size: 4rem; margin-bottom: 1rem;">🛍️</div>
+      <div class="empty-title">No orders found</div>
+      <div class="empty-text">Looks like you haven't placed any orders yet. (Note: Old orders were cleared during our recent system upgrade).</div>
+      <a href="/" class="btn btn-primary" style="margin-top: 1.5rem;">Start Shopping</a>
+    </div>
+
+    <div id="login-required" class="empty-state" style="display:none; padding: 4rem 1rem;">
+      <div class="empty-icon" style="font-size: 4rem; margin-bottom: 1rem;">🔒</div>
+      <div class="empty-title">Login Required</div>
+      <div class="empty-text">Please login to view your order history.</div>
+      <div style="display:flex;gap:1rem;justify-content:center;flex-wrap:wrap; margin-top: 1.5rem;">
+        <a href="/login" class="btn btn-primary">Login</a>
+        <a href="/register" class="btn btn-outline">Create Account</a>
+      </div>
+    </div>
+  </div>
+
+  <script src="/js/main.js?v=13"></script>
+  <script>
+    async function loadOrders() {
+      document.getElementById('navbar-root').innerHTML = renderNavbar();
+      updateNavAuth();
+      updateCartCount();
+
+      if (!isLoggedIn()) {
+        document.getElementById('loading').style.display = 'none';
+        document.getElementById('login-required').style.display = 'block';
+        return;
+      }
+
+      try {
+        const res = await fetch(`${API}/orders/my`, { headers: getHeaders() });
+        let orders = await res.json();
+
+        document.getElementById('loading').style.display = 'none';
+
+        // Sort orders from newest to oldest and hide cancelled ones
+        orders = orders.filter(o => o.status !== 'cancelled').sort((a,b) => b.id - a.id);
+
+        if (orders.length === 0) {
+          document.getElementById('empty-orders').style.display = 'block';
+          return;
+        }
+
+        document.getElementById('orders-list').style.display = 'block';
+        document.getElementById('orders-list').innerHTML = orders.map(order => `
+          <div class="order-card">
+            <div class="order-header">
+              <div style="display: flex; gap: 2rem; flex-wrap: wrap;">
+                <div>
+                  <div class="info-label">ORDER PLACED</div>
+                  <div class="info-value">${new Date(order.created_at).toLocaleDateString('en-IN', { day:'numeric', month:'short', year:'numeric' })}</div>
+                </div>
+                <div>
+                  <div class="info-label">TOTAL</div>
+                  <div class="info-value" style="color: var(--accent);">${formatPrice(order.total)}</div>
+                </div>
+                <div>
+                  <div class="info-label">SHIP TO</div>
+                  <div class="info-value" style="color: var(--text-secondary);">${order.name}</div>
+                </div>
+              </div>
+              <div style="text-align: right;">
+                <div class="info-label">ORDER ID</div>
+                <div class="info-value">#${order.id}</div>
+              </div>
+            </div>
+
+            <div class="order-items-list">
+              ${order.items.map(item => `
+                <div class="order-item-row">
+                  <img src="${item.image}" alt="${item.name}" class="order-item-img" onerror="this.src='https://via.placeholder.com/90'">
+                  <div style="flex:1">
+                    <div style="font-weight:700;font-size:1.1rem; margin-bottom: 0.3rem;">${item.name}</div>
+                    <div style="color:var(--text-secondary);font-size:0.9rem; margin-bottom: 0.5rem;">Qty: ${item.quantity} &nbsp;|&nbsp; ${formatPrice(item.price)} each</div>
+                    <button class="btn btn-outline btn-sm" onclick="window.location='/product?id=${item.product_id}'" style="padding: 0.3rem 0.8rem; font-size: 0.8rem;">Buy it again</button>
+                  </div>
+                </div>
+              `).join('')}
+            </div>
+
+            ${(function() {
+              const minutesElapsed = (new Date() - new Date(order.created_at)) / 60000;
+              let step = 1;
+              let fill = '0%';
+              let msg = 'Your order has been received and is being processed.';
+              
+              if (minutesElapsed > 1) {
+                step = 2; fill = '33%';
+                msg = 'Your order is being packed at our facility.';
+              }
+              if (minutesElapsed > 3) {
+                step = 3; fill = '66%';
+                msg = 'Out for Delivery. Reaching your location soon!';
+              }
+              if (minutesElapsed > 10) {
+                step = 4; fill = '100%';
+                msg = 'Delivered successfully.';
+              }
+              
+              if (order.status === 'cancelled') return '';
+
+              return `
+              <div class="track-container">
+                <div class="track-bar">
+                  <div class="track-bar-fill" style="width: ${fill}"></div>
+                  <div class="track-step ${step >= 1 ? 'active' : ''}">
+                    <div class="track-icon">📝</div>
+                    <div class="track-label">Placed</div>
+                  </div>
+                  <div class="track-step ${step >= 2 ? 'active' : ''}">
+                    <div class="track-icon">📦</div>
+                    <div class="track-label">Packed</div>
+                  </div>
+                  <div class="track-step ${step >= 3 ? 'active' : ''}">
+                    <div class="track-icon">🚚</div>
+                    <div class="track-label">Shipped</div>
+                  </div>
+                  <div class="track-step ${step >= 4 ? 'active' : ''}">
+                    <div class="track-icon">✅</div>
+                    <div class="track-label">Delivered</div>
+                  </div>
+                </div>
+                <div class="track-details">
+                  <strong>Current Status:</strong> ${msg}
+                </div>
+              </div>
+              `;
+            })()}
+
+            <div class="order-footer">
+              <div style="font-size:0.9rem;color:var(--text-secondary)">
+                 <span style="font-weight: 600; color: var(--text-primary);">Delivery Address:</span> ${order.address}, ${order.city}
+                 <br>
+                 <span style="font-weight: 600; color: var(--text-primary); margin-top: 0.3rem; display: inline-block;">Payment Method:</span> ${order.payment_method === 'cod' ? 'Cash/UPI on Delivery' : order.payment_method === 'upi' ? 'UPI Paid' : 'Card Paid'}
+              </div>
+              <div style="text-align: right;">
+                <span style="background: ${order.status === 'cancelled' ? 'rgba(255, 71, 87, 0.1)' : 'rgba(0, 184, 148, 0.1)'}; color: ${order.status === 'cancelled' ? '#ff4757' : 'var(--success)'}; padding: 0.5rem 1rem; border-radius: 20px; font-weight: 700; font-size: 0.9rem;">
+                  ${order.status === 'confirmed' ? '✅ Confirmed - Arriving soon' : order.status === 'cancelled' ? `❌ Cancelled${order.cancel_reason ? '<br><span style="font-size:0.75rem;opacity:0.8;display:block;margin-top:4px;">Reason: ' + order.cancel_reason + '</span>' : ''}` : '⏳ ' + order.status}
+                </span>
+                <div style="margin-top: 1rem;">
+                  ${order.status === 'confirmed' ? `<button class="btn btn-outline btn-sm" onclick="cancelOrder(${order.id})" style="border-color: #ff4757; color: #ff4757;">Cancel Order</button>` : ''}
+                </div>
+              </div>
+            </div>
+          </div>
+        `).join('');
+      } catch {
+        showToast('Failed to load orders', 'error');
+      }
+    }
+
+    async function cancelOrder(id) {
+      const reason = prompt('Please let us know why you are cancelling this order:');
+      if (reason === null) return; // User cancelled the prompt
+
+      try {
+        const res = await fetch(`${API}/orders/${id}/cancel`, {
+          method: 'PUT',
+          headers: { ...getHeaders(), 'Content-Type': 'application/json' },
+          body: JSON.stringify({ reason: reason.trim() || 'No reason provided' })
+        });
+        const data = await res.json();
+        if (data.success) {
+          showToast('Order Cancelled Successfully', 'success');
+          loadOrders();
+        } else {
+          showToast(data.error || 'Failed to cancel order', 'error');
+        }
+      } catch {
+        showToast('Network error', 'error');
+      }
+    }
+
+    document.addEventListener('DOMContentLoaded', loadOrders);
+  </script>
+</body>
+</html>

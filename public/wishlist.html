@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>My Wishlist — ShopVerse</title>
+  <link rel="icon" type="image/svg+xml" href="/favicon.svg">
+  <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+  <div id="navbar-root"></div>
+
+  <div class="container" style="max-width: 1400px; padding-top: 2rem;">
+    <div class="page-header">
+      <div style="margin-bottom: 1rem;"><a href="/" class="btn btn-outline btn-sm">&larr; Back to Shopping</a></div>
+      <h1 class="page-title">❤️ My Wishlist</h1>
+      <p class="page-subtitle" id="wishlist-subtitle">Items you've saved for later</p>
+    </div>
+
+    <div class="loading" id="loading">
+      <div class="dot"></div><div class="dot"></div><div class="dot"></div>
+    </div>
+    
+    <div class="products-grid" id="wishlist-grid" style="display:none; margin-bottom: 4rem;"></div>
+    
+    <div id="empty-wishlist" class="empty-state" style="display:none; margin-bottom: 4rem;">
+      <div class="empty-icon" style="font-size: 3rem;">🤍</div>
+      <div class="empty-title">Your wishlist is empty</div>
+      <div class="empty-text">Save items that you like and buy them later.</div>
+      <a href="/" class="btn btn-primary" style="margin-top: 1rem; display: inline-block;">Discover Products</a>
+    </div>
+  </div>
+
+  <script src="/js/main.js?v=6"></script>
+  <script>
+    async function init() {
+      if (!isLoggedIn()) {
+        window.location = '/login';
+        return;
+      }
+      document.getElementById('navbar-root').innerHTML = renderNavbar('wishlist');
+      updateNavAuth();
+      updateCartCount();
+      await fetchUserWishlist(); // load global wishlist first
+      await loadWishlistPage();
+    }
+
+    async function loadWishlistPage() {
+      const loading = document.getElementById('loading');
+      const grid = document.getElementById('wishlist-grid');
+      const empty = document.getElementById('empty-wishlist');
+      const subtitle = document.getElementById('wishlist-subtitle');
+
+      try {
+        const res = await fetch(`${API}/wishlist`, {
+          headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` }
+        });
+        const data = await res.json();
+        
+        loading.style.display = 'none';
+
+        if (!data.wishlist || data.wishlist.length === 0) {
+          grid.style.display = 'none';
+          empty.style.display = 'flex';
+          subtitle.textContent = "0 items saved";
+        } else {
+          grid.style.display = 'grid';
+          empty.style.display = 'none';
+          subtitle.textContent = `${data.wishlist.length} items saved`;
+          grid.innerHTML = data.wishlist.map(createProductCardHTML).join('');
+        }
+      } catch (err) {
+        showToast('Failed to load wishlist', 'error');
+        loading.style.display = 'none';
+      }
+    }
+
+    // Override toggleWishlist slightly so that removing from wishlist re-renders the page
+    const originalToggle = toggleWishlist;
+    window.toggleWishlist = async function(productId, btnElement) {
+      await originalToggle(productId, btnElement);
+      // Re-render
+      await loadWishlistPage();
+    };
+
+    document.addEventListener('DOMContentLoaded', init);
+  </script>
+</body>
+</html>

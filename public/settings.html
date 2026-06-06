@@ -1,0 +1,280 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Settings — ShopVerse</title>
+  <link rel="icon" type="image/svg+xml" href="/favicon.svg">
+  <link rel="stylesheet" href="/css/style.css">
+  <style>
+    .settings-layout {
+      display: grid;
+      grid-template-columns: 250px 1fr;
+      gap: 3rem;
+    }
+    .settings-sidebar {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 1rem;
+      height: fit-content;
+    }
+    .settings-tab {
+      display: block;
+      width: 100%;
+      text-align: left;
+      padding: 0.8rem 1rem;
+      background: transparent;
+      border: none;
+      border-radius: 8px;
+      color: var(--text-secondary);
+      font-size: 0.95rem;
+      font-weight: 500;
+      cursor: pointer;
+      margin-bottom: 0.5rem;
+      transition: all 0.2s;
+    }
+    .settings-tab:hover {
+      background: rgba(108, 99, 255, 0.1);
+      color: var(--accent);
+    }
+    .settings-tab.active {
+      background: var(--accent);
+      color: white;
+    }
+    .settings-panel {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 2.5rem;
+    }
+    .settings-section-title {
+      font-size: 1.4rem;
+      font-weight: 700;
+      margin-bottom: 1.5rem;
+      color: var(--text-primary);
+    }
+    .setting-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 1.5rem 0;
+      border-bottom: 1px solid var(--border);
+    }
+    .setting-item:last-child {
+      border-bottom: none;
+    }
+    .setting-info h4 {
+      font-size: 1rem;
+      margin-bottom: 0.3rem;
+      color: var(--text-primary);
+    }
+    .setting-info p {
+      font-size: 0.85rem;
+      color: var(--text-secondary);
+    }
+    /* Toggle Switch */
+    .switch {
+      position: relative;
+      display: inline-block;
+      width: 48px;
+      height: 24px;
+    }
+    .switch input {
+      opacity: 0;
+      width: 0;
+      height: 0;
+    }
+    .slider {
+      position: absolute;
+      cursor: pointer;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background-color: var(--bg-secondary);
+      border: 1px solid var(--border);
+      transition: .4s;
+      border-radius: 24px;
+    }
+    .slider:before {
+      position: absolute;
+      content: "";
+      height: 18px;
+      width: 18px;
+      left: 2px;
+      bottom: 2px;
+      background-color: var(--text-secondary);
+      transition: .4s;
+      border-radius: 50%;
+    }
+    input:checked + .slider {
+      background-color: var(--accent);
+      border-color: var(--accent);
+    }
+    input:checked + .slider:before {
+      transform: translateX(24px);
+      background-color: white;
+    }
+    @media (max-width: 768px) {
+      .settings-layout { grid-template-columns: 1fr; gap: 1.5rem; }
+    }
+  </style>
+</head>
+<body>
+  <div id="navbar-root"></div>
+
+  <div class="container">
+    <div class="page-header">
+      <a href="/" style="color: var(--text-secondary); text-decoration: none; display: inline-block; margin-bottom: 1rem; font-weight: 500;">&larr; Back to Home</a>
+      <h1 class="page-title">Settings</h1>
+      <p class="page-subtitle">Manage your account and preferences.</p>
+    </div>
+
+    <div class="settings-layout">
+      <!-- Sidebar -->
+      <div class="settings-sidebar">
+        <button class="settings-tab" onclick="window.location='/orders'" style="text-align: left;">📦 My Orders</button>
+        <button class="settings-tab" onclick="window.location='/wishlist'" style="text-align: left;">❤️ My Wishlist</button>
+        <div style="height: 1px; background: var(--border); margin: 1rem 0;"></div>
+        <button class="settings-tab active" onclick="switchTab('profile')">👤 My Profile</button>
+        <button class="settings-tab" onclick="switchTab('preferences')">⚙️ Preferences</button>
+        <button class="settings-tab" onclick="switchTab('security')">🔒 Security</button>
+      </div>
+
+      <!-- Panels -->
+      <div class="settings-content">
+        
+        <!-- Profile Panel -->
+        <div class="settings-panel" id="panel-profile">
+          <h2 class="settings-section-title">Personal Information</h2>
+          <form id="profile-form">
+            <div class="form-group">
+              <label class="form-label">Full Name</label>
+              <input type="text" id="profile-name" class="form-input" required>
+            </div>
+            <div class="form-group">
+              <label class="form-label">Email Address</label>
+              <input type="email" id="profile-email" class="form-input" required>
+            </div>
+            <button type="submit" class="btn btn-primary" id="save-profile-btn" style="margin-top: 1rem;">Save Changes</button>
+          </form>
+        </div>
+
+        <!-- Preferences Panel -->
+        <div class="settings-panel" id="panel-preferences" style="display: none;">
+          <h2 class="settings-section-title">App Preferences</h2>
+          
+          <div class="setting-item">
+            <div class="setting-info">
+              <h4>Dark Mode</h4>
+              <p>Experience the app in a dark, premium theme.</p>
+            </div>
+            <label class="switch">
+              <input type="checkbox" id="setting-theme" onchange="handleThemeToggle(this)">
+              <span class="slider"></span>
+            </label>
+          </div>
+
+          <div class="setting-item">
+            <div class="setting-info">
+              <h4>Email Notifications</h4>
+              <p>Receive order updates and promotional offers.</p>
+            </div>
+            <label class="switch">
+              <input type="checkbox" checked>
+              <span class="slider"></span>
+            </label>
+          </div>
+        </div>
+
+        <!-- Security Panel -->
+        <div class="settings-panel" id="panel-security" style="display: none;">
+          <h2 class="settings-section-title">Account Security</h2>
+          
+          <div class="setting-item">
+            <div class="setting-info">
+              <h4>Change Password</h4>
+              <p>You will be redirected to the secure password reset flow.</p>
+            </div>
+            <a href="/forgot-password" class="btn btn-outline btn-sm">Reset Password</a>
+          </div>
+
+          <div class="setting-item">
+            <div class="setting-info">
+              <h4>Sign Out</h4>
+              <p>Securely log out of this device.</p>
+            </div>
+            <button onclick="logout()" class="btn btn-danger btn-sm">Logout</button>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <script src="/js/main.js?v=10"></script>
+  <script>
+    if (!isLoggedIn()) {
+      window.location = '/login';
+    }
+
+    // Initialize Profile Data
+    document.addEventListener('DOMContentLoaded', () => {
+      const user = getUser();
+      if (user) {
+        document.getElementById('profile-name').value = user.name;
+        document.getElementById('profile-email').value = user.email;
+      }
+      
+      const isLight = document.documentElement.getAttribute('data-theme') === 'light';
+      document.getElementById('setting-theme').checked = !isLight; // If not light, dark mode is ON
+    });
+
+    // Tab Switching
+    function switchTab(tabId) {
+      document.querySelectorAll('.settings-tab').forEach(t => t.classList.remove('active'));
+      document.querySelectorAll('.settings-panel').forEach(p => p.style.display = 'none');
+      
+      event.target.classList.add('active');
+      document.getElementById(`panel-${tabId}`).style.display = 'block';
+    }
+
+    // Handle Theme Toggle from Settings
+    function handleThemeToggle(checkbox) {
+      const newTheme = checkbox.checked ? 'dark' : 'light';
+      applyTheme(newTheme);
+    }
+
+    // Profile Form Submit
+    document.getElementById('profile-form').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const btn = document.getElementById('save-profile-btn');
+      const name = document.getElementById('profile-name').value;
+      const email = document.getElementById('profile-email').value;
+      
+      btn.innerHTML = 'Saving... <div class="dot" style="display:inline-block;width:4px;height:4px"></div>';
+      btn.disabled = true;
+
+      try {
+        const res = await apiCall('/auth/profile', {
+          method: 'PUT',
+          body: JSON.stringify({ name, email })
+        });
+        
+        if (res.error) {
+          showToast(' ' + res.error);
+        } else {
+          // Update localstorage token and user details
+          localStorage.setItem('token', res.token);
+          localStorage.setItem('user', JSON.stringify(res.user));
+          showToast(' ' + res.message);
+          updateNavAuth(); // Refresh navbar name
+        }
+      } catch (err) {
+        showToast(' Failed to update profile');
+      } finally {
+        btn.innerHTML = 'Save Changes';
+        btn.disabled = false;
+      }
+    });
+  </script>
+</body>
+</html>

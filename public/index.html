@@ -1,0 +1,282 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ShopVerse — Premium E-Commerce</title>
+  <meta name="description" content="Shop the best products at ShopVerse. Electronics, Fashion, Lifestyle and more.">
+  <!-- Google Analytics Mock -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-MOCKTRACKING"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', 'G-MOCKTRACKING');
+  </script>
+  <link rel="icon" type="image/svg+xml" href="/favicon.svg">
+  <link rel="stylesheet" href="/css/style.css?v=6">
+</head>
+<body>
+  <header>
+    <div id="navbar-root"></div>
+  </header>
+
+  <main>
+    <div class="container" style="max-width: 1400px; padding-top: 2rem;">
+      
+      <!-- Mega Carousel -->
+      <section class="carousel" id="hero-carousel" aria-label="Promotions Carousel">
+        <div class="carousel-inner" id="carousel-inner">
+          <!-- Slide 1 -->
+          <div class="carousel-item" style="background-image: url('https://images.unsplash.com/photo-1607082348824-0a96f2a4b9da?auto=format&fit=crop&q=80');">
+            <div class="carousel-content">
+              <h1 style="font-size: 3rem; margin-bottom: 1rem; text-shadow: 0 4px 20px rgba(0,0,0,0.5);">Festive Mega Sale!</h1>
+              <p style="font-size: 1.2rem; margin-bottom: 2rem;">Up to 70% OFF on Top Electronics & Fashion.</p>
+              <button class="btn btn-primary" aria-label="Shop Deals" onclick="document.getElementById('deals-section').scrollIntoView({behavior:'smooth'})">Shop Deals</button>
+            </div>
+          </div>
+          <!-- Slide 2 -->
+          <div class="carousel-item" style="background-image: url('https://images.unsplash.com/photo-1441986300917-64674bd600d8?auto=format&fit=crop&q=80');">
+            <div class="carousel-content">
+              <h1 style="font-size: 3rem; margin-bottom: 1rem;">Trending Styles</h1>
+              <p style="font-size: 1.2rem; margin-bottom: 2rem;">Upgrade your wardrobe with our latest collection.</p>
+              <button class="btn btn-primary" aria-label="View Fashion" onclick="selectCategory('Fashion')">View Fashion</button>
+            </div>
+          </div>
+          <!-- Slide 3 -->
+          <div class="carousel-item" style="background-image: url('https://images.unsplash.com/photo-1498049794561-7780e7231661?auto=format&fit=crop&q=80');">
+            <div class="carousel-content">
+              <h1 style="font-size: 3rem; margin-bottom: 1rem;">Tech That Moves You</h1>
+              <p style="font-size: 1.2rem; margin-bottom: 2rem;">Discover the future with our top-rated gadgets.</p>
+              <button class="btn btn-primary" aria-label="Explore Tech" onclick="selectCategory('Electronics')">Explore Tech</button>
+            </div>
+          </div>
+        </div>
+        <div class="carousel-indicators">
+          <div class="indicator active" aria-label="Slide 1" onclick="goToSlide(0)"></div>
+          <div class="indicator" aria-label="Slide 2" onclick="goToSlide(1)"></div>
+          <div class="indicator" aria-label="Slide 3" onclick="goToSlide(2)"></div>
+        </div>
+      </section>    <!-- Deals of the Day Row -->
+    <div class="horizontal-scroll-container" id="deals-section">
+      <div class="section-title">
+        ⚡ Deals of the Day
+        <a href="#all-products" class="view-all">View All</a>
+      </div>
+      <div class="horizontal-scroll-row" id="deals-row">
+        <!-- Rendered via JS -->
+      </div>
+    </div>
+
+    <!-- Electronics Row -->
+    <div class="horizontal-scroll-container">
+      <div class="section-title">
+        💻 Best Selling Electronics
+        <a href="#" class="view-all" onclick="event.preventDefault(); selectCategory('Electronics')">View All</a>
+      </div>
+      <div class="horizontal-scroll-row" id="electronics-row">
+        <!-- Rendered via JS -->
+      </div>
+    </div>
+
+    <hr style="border:0; border-top: 1px solid var(--border); margin: 3rem 0;">
+
+    <!-- All Products & Filters -->
+    <h2 class="section-title" id="all-products">Explore All Products</h2>
+    <div class="filter-bar" id="filter-bar">
+      <span class="filter-label">Category:</span>
+      <div id="category-filters" style="display:flex;gap:0.5rem;flex-wrap:wrap"></div>
+      <select class="sort-select" id="sort-select" onchange="filterProducts()">
+        <option value="">Sort: Default</option>
+        <option value="price_asc">Price: Low to High</option>
+        <option value="price_desc">Price: High to Low</option>
+        <option value="rating">Top Rated</option>
+      </select>
+    </div>
+
+    <div class="loading" id="loading">
+      <div class="dot"></div><div class="dot"></div><div class="dot"></div>
+    </div>
+    
+    <div class="products-grid" id="products-grid" style="display:none; margin-bottom: 4rem;"></div>
+    
+    <div id="empty-products" class="empty-state" style="display:none; margin-bottom: 4rem;">
+      <div class="empty-icon">🤷</div>
+      <div class="empty-title">No products found</div>
+      <div class="empty-text">Try different search terms or category</div>
+    </div>
+  </div>
+  </main>
+
+  <footer class="mega-footer">
+    <div class="mega-footer-top">
+      <div class="mega-footer-col">
+        <h3>Get to Know Us</h3>
+        <a href="#">About ShopVerse</a>
+        <a href="#">Careers</a>
+        <a href="#">Press Releases</a>
+        <a href="#">ShopVerse Science</a>
+      </div>
+      <div class="mega-footer-col">
+        <h3>Connect with Us</h3>
+        <a href="#">Facebook</a>
+        <a href="#">Twitter</a>
+        <a href="#">Instagram</a>
+      </div>
+      <div class="mega-footer-col">
+        <h3>Make Money with Us</h3>
+        <a href="#">Sell on ShopVerse</a>
+        <a href="#">Protect and Build Your Brand</a>
+        <a href="#">ShopVerse Global Selling</a>
+        <a href="#">Supply to ShopVerse</a>
+        <a href="#">Become an Affiliate</a>
+      </div>
+      <div class="mega-footer-col">
+        <h3>Let Us Help You</h3>
+        <a href="#">Your Account</a>
+        <a href="#">Returns Centre</a>
+        <a href="#">100% Purchase Protection</a>
+        <a href="#">ShopVerse App Download</a>
+        <a href="#">Help</a>
+      </div>
+    </div>
+    <div class="mega-footer-mid">
+      <div class="logo">ShopVerse</div>
+      <button class="btn btn-outline btn-sm">🌐 English</button>
+      <button class="btn btn-outline btn-sm">🇮🇳 India</button>
+    </div>
+    <div class="mega-footer-bottom">
+      <div class="mega-footer-bottom-grid">
+        <div class="mega-footer-bottom-col">
+          <a href="#"><span>AbeBooks</span>Books, art<br>& collectibles</a>
+        </div>
+        <div class="mega-footer-bottom-col">
+          <a href="#"><span>ShopVerse Web Services</span>Scalable Cloud<br>Computing Services</a>
+        </div>
+        <div class="mega-footer-bottom-col">
+          <a href="#"><span>Audible</span>Download<br>Audio Books</a>
+        </div>
+        <div class="mega-footer-bottom-col">
+          <a href="#"><span>IMDb</span>Movies, TV<br>& Celebrities</a>
+        </div>
+      </div>
+      <div class="mega-footer-legal">
+        <div style="margin-bottom:0.5rem;">
+          <a href="#">Conditions of Use & Sale</a>
+          <a href="#">Privacy Notice</a>
+          <a href="#">Interest-Based Ads</a>
+        </div>
+      </div>
+    </div>
+  </footer>
+
+  <script src="/js/main.js?v=14"></script>
+  <script>
+    let allProducts = [];
+    let activeCategory = 'All';
+
+    // Carousel Logic
+    let currentSlide = 0;
+    const totalSlides = 3;
+    function goToSlide(index) {
+      currentSlide = index;
+      document.getElementById('carousel-inner').style.transform = `translateX(-${currentSlide * 100}%)`;
+      const indicators = document.querySelectorAll('.indicator');
+      indicators.forEach((ind, i) => {
+        ind.classList.toggle('active', i === currentSlide);
+      });
+    }
+    setInterval(() => {
+      goToSlide((currentSlide + 1) % totalSlides);
+    }, 4000);
+
+    // Init Page
+    async function init() {
+      document.getElementById('navbar-root').innerHTML = renderNavbar('home');
+      updateNavAuth();
+      updateCartCount();
+      await fetchUserWishlist(); // from main.js
+
+      const urlQ = new URLSearchParams(window.location.search).get('q');
+      if (urlQ) document.getElementById('search-input').value = urlQ;
+
+      await loadCategories();
+      await loadProducts();
+    }
+
+    async function loadCategories() {
+      try {
+        const res = await fetch(`${API}/products/categories`);
+        const cats = await res.json();
+        const container = document.getElementById('category-filters');
+        container.innerHTML = cats.map(cat => `
+          <button class="category-btn ${cat === 'All' ? 'active' : ''}" 
+            onclick="selectCategory('${cat}')" data-cat="${cat}">${cat}</button>
+        `).join('');
+      } catch {}
+    }
+
+    function selectCategory(cat) {
+      activeCategory = cat;
+      document.querySelectorAll('.category-btn').forEach(b => {
+        b.classList.toggle('active', b.dataset.cat === cat);
+      });
+      // Scroll to all products section when category is clicked
+      document.getElementById('all-products').scrollIntoView({ behavior: 'smooth' });
+      filterProducts();
+    }
+
+    async function loadProducts() {
+      try {
+        const res = await fetch(`${API}/products`);
+        allProducts = await res.json();
+        
+        // Render Deals Row
+        const deals = allProducts.filter(p => p.is_deal_of_day);
+        document.getElementById('deals-row').innerHTML = deals.map(createProductCardHTML).join('');
+
+        // Render Electronics Row
+        const electronics = allProducts.filter(p => p.category === 'Electronics').slice(0, 5);
+        document.getElementById('electronics-row').innerHTML = electronics.map(createProductCardHTML).join('');
+
+        // Render All
+        filterProducts();
+      } catch {
+        showToast('Failed to load products', 'error');
+      }
+    }
+
+    function filterProducts() {
+      const search = document.getElementById('search-input')?.value?.toLowerCase() || '';
+      const sort = document.getElementById('sort-select').value;
+
+      let filtered = allProducts.filter(p => {
+        const matchCat = activeCategory === 'All' || p.category === activeCategory;
+        const matchSearch = p.name.toLowerCase().includes(search) || 
+                           p.description.toLowerCase().includes(search);
+        return matchCat && matchSearch;
+      });
+
+      if (sort === 'price_asc') filtered.sort((a,b) => a.price - b.price);
+      if (sort === 'price_desc') filtered.sort((a,b) => b.price - a.price);
+      if (sort === 'rating') filtered.sort((a,b) => b.rating - a.rating);
+
+      const grid = document.getElementById('products-grid');
+      const loading = document.getElementById('loading');
+      const empty = document.getElementById('empty-products');
+
+      loading.style.display = 'none';
+      if (filtered.length === 0) {
+        grid.style.display = 'none';
+        empty.style.display = 'block';
+      } else {
+        grid.style.display = '';
+        empty.style.display = 'none';
+        grid.innerHTML = filtered.map(createProductCardHTML).join('');
+      }
+    }
+
+    document.addEventListener('DOMContentLoaded', init);
+  </script>
+</body>
+</html>

@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Register — ShopVerse</title>
+  <link rel="icon" type="image/svg+xml" href="/favicon.svg">
+  <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+  <div class="auth-wrapper">
+    <div class="auth-card">
+      <a href="/" style="display:block">
+        <div class="auth-logo">️ ShopVerse</div>
+      </a>
+      <p class="auth-subtitle">Create your account and start shopping!</p>
+
+      <form onsubmit="handleRegister(event)">
+        <div class="form-group">
+          <label class="form-label">Full Name</label>
+          <input type="text" id="reg-name" class="form-input" placeholder="John Doe" required>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Email Address</label>
+          <input type="email" id="reg-email" class="form-input" placeholder="john@example.com" required>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Password</label>
+          <input type="password" id="reg-password" class="form-input" placeholder="Min. 6 characters" required minlength="6">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Confirm Password</label>
+          <input type="password" id="reg-confirm" class="form-input" placeholder="Repeat password" required>
+        </div>
+
+        <div id="reg-error" style="display:none;color:var(--danger);font-size:0.85rem;margin-bottom:1rem;padding:0.7rem;background:rgba(255,77,109,0.1);border-radius:8px;border:1px solid rgba(255,77,109,0.3)"></div>
+
+        <button type="submit" class="btn btn-primary" id="reg-btn" style="width:100%;justify-content:center">
+          Create Account →
+        </button>
+      </form>
+
+      <div class="auth-switch">
+        Already have an account? <a href="/login">Sign In</a>
+      </div>
+    </div>
+  </div>
+
+  <script src="/js/main.js?v=2"></script>
+  <script>
+    if (isLoggedIn()) window.location = '/';
+
+    async function handleRegister(e) {
+      e.preventDefault();
+      const btn = document.getElementById('reg-btn');
+      const errEl = document.getElementById('reg-error');
+      errEl.style.display = 'none';
+
+      const password = document.getElementById('reg-password').value;
+      const confirm = document.getElementById('reg-confirm').value;
+
+      if (password !== confirm) {
+        errEl.textContent = 'Passwords do not match!';
+        errEl.style.display = 'block';
+        return;
+      }
+
+      btn.disabled = true;
+      btn.textContent = '⏳ Creating account...';
+
+      try {
+        const res = await fetch(`${API}/auth/register`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            name: document.getElementById('reg-name').value,
+            email: document.getElementById('reg-email').value,
+            password
+          })
+        });
+        const data = await res.json();
+        if (data.token) {
+          localStorage.setItem('token', data.token);
+          localStorage.setItem('user', JSON.stringify(data.user));
+          showToast('Welcome to ShopVerse! ', 'success');
+          setTimeout(() => window.location = '/', 1000);
+        } else {
+          errEl.textContent = data.error || 'Registration failed';
+          errEl.style.display = 'block';
+          btn.disabled = false;
+          btn.textContent = 'Create Account →';
+        }
+      } catch {
+        errEl.textContent = 'Server error. Please try again.';
+        errEl.style.display = 'block';
+        btn.disabled = false;
+        btn.textContent = 'Create Account →';
+      }
+    }
+  </script>
+</body>
+</html>
