@@ -1,6 +1,8 @@
 # 🛒 ShopVerse: Premium E-Commerce Platform
 **A Modern, Responsive, and Secure Online Shopping Experience**
 
+[![Live Demo](https://img.shields.io/badge/Live_Demo-View_ShopVerse-2ea44f?style=for-the-badge&logo=googlecloud)](https://ecommerce-10494438820.us-central1.run.app)
+
 ShopVerse is a premium, full-stack e-commerce platform designed to provide a seamless shopping experience. Built from the ground up without heavy frontend frameworks, it features a custom JSON-based database, secure JWT authentication, and a fully responsive, beautiful UI.
 
 ## 🚀 Key Features & Recent Improvements
