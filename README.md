@@ -1,7 +1,6 @@
 # 🛒 ShopVerse: Premium E-Commerce Platform
 **A Modern, Responsive, and Multi-Tenant Online Shopping Experience**
 
-[![Live Demo](https://img.shields.io/badge/Live_Demo-View_ShopVerse-2ea44f?style=for-the-badge&logo=googlecloud)](https://shopverse-app-10494438820.us-central1.run.app)
 
 ## 🌐 Live Deployment Links
 - **🛍️ Main Storefront (For Customers):** [https://shopverse-app-10494438820.us-central1.run.app](https://shopverse-app-10494438820.us-central1.run.app)
