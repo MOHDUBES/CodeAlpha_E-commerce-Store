@@ -2,26 +2,28 @@
 const API = '/api';
 
 // --- Cross-Port Auth Sync ---
-const urlParams = new URLSearchParams(window.location.search);
-const tokenParam = urlParams.get('token');
-const userParam = urlParams.get('user');
-const fromSellerParam = urlParams.get('from_seller');
+(function() {
+  const params = new URLSearchParams(window.location.search);
+  const tokenParam = params.get('token');
+  const userParam = params.get('user');
+  const fromSellerParam = params.get('from_seller');
 
-if (tokenParam && userParam) {
-  localStorage.setItem('token', tokenParam);
-  try {
-    localStorage.setItem('user', decodeURIComponent(userParam));
-  } catch (e) {}
-}
+  if (tokenParam && userParam) {
+    localStorage.setItem('token', tokenParam);
+    try {
+      localStorage.setItem('user', decodeURIComponent(userParam));
+    } catch (e) {}
+  }
 
-if (fromSellerParam) {
-  sessionStorage.setItem('from_seller', 'true');
-}
+  if (fromSellerParam) {
+    sessionStorage.setItem('from_seller', 'true');
+  }
 
-if (tokenParam || fromSellerParam) {
-  const cleanUrl = window.location.protocol + '//' + window.location.host + window.location.pathname;
-  window.history.replaceState({ path: cleanUrl }, '', cleanUrl);
-}
+  if (tokenParam || fromSellerParam) {
+    const cleanUrl = window.location.protocol + '//' + window.location.host + window.location.pathname;
+    window.history.replaceState({ path: cleanUrl }, '', cleanUrl);
+  }
+})();
 // -----------------------------
 
 
