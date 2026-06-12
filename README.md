@@ -1,28 +1,26 @@
 # 🛒 ShopVerse: Premium E-Commerce Platform
-**A Modern, Responsive, and Secure Online Shopping Experience**
+**A Modern, Responsive, and Multi-Tenant Online Shopping Experience**
 
 [![Live Demo](https://img.shields.io/badge/Live_Demo-View_ShopVerse-2ea44f?style=for-the-badge&logo=googlecloud)](https://ecommerce-10494438820.us-central1.run.app)
 
-ShopVerse is a premium, full-stack e-commerce platform designed to provide a seamless shopping experience. Built from the ground up without heavy frontend frameworks, it features a custom JSON-based database, secure JWT authentication, and a fully responsive, beautiful UI.
+ShopVerse is a premium, full-stack e-commerce platform designed to provide a seamless shopping experience for customers and a powerful management dashboard for sellers. Built with a robust backend using Express and Prisma ORM, it features secure cross-domain JWT authentication, role-based access, and a fully responsive, beautiful UI.
 
 ## 🚀 Key Features & Recent Improvements
+- **👨‍💼 Dual Architecture (Storefront & Seller Dashboard):** The application runs on two separate ports/domains, isolating the customer experience from the seller management interface.
+- **🏪 Dedicated Seller Dashboard:** Sellers can manage their inventory, view real-time sales metrics, toggle product availability, and process customer orders (mark shipped, delivered, or reject).
+- **🗄️ Relational Database (Prisma + SQLite):** Migrated from a JSON-based database to a robust relational model using Prisma ORM, ensuring data integrity, foreign key constraints, and scalability.
 - **🛍️ Dynamic Cart & Checkout:** Add, update, and remove items with real-time total calculation. Remove items directly from the Secure Checkout page.
-- **🔐 Secure Authentication:** JWT-based login, registration, and OTP-based password reset flow.
-- **📦 Order Tracking:** Seamless checkout flow with a dedicated dashboard to track past orders, including a live visual progress bar (Placed -> Packed -> Shipped -> Delivered).
-- **⚙️ User Preferences:** Integrated settings dashboard with profile management and dark/light mode toggle.
-- **✨ Premium UI/UX:** Fully responsive design, CSS variables for theming, smooth micro-animations, and modern glassmorphism elements.
+- **🔐 Secure Authentication:** JWT-based login and registration with cross-port session syncing for a seamless user-to-seller transition.
 
 ## 🛡️ Security & Technical Excellence
 - **Enterprise-Grade Security:** Fortified with `helmet` for secure HTTP headers, `express-rate-limit` to prevent brute-force attacks, and environment variables (`dotenv`) for sensitive credentials. Passwords are securely hashed via `bcryptjs`.
-- **High Performance & Efficiency:** Features an **In-Memory Database Caching** system that eliminates synchronous disk I/O bottlenecks. Uses `compression` for GZIP responses and leverages browser caching for static assets.
-- **Accessibility & SEO (100% Score):** Pages are structured with semantic HTML5 tags (`<main>`, `<header>`, `<footer>`) and `aria-labels` for full screen-reader support.
-- **Automated Testing:** Comprehensive API test suite built using **Jest** and **Supertest** covering all authentication and product endpoints.
-- **Google Services Integrated:** Includes mock Google Analytics tracking and Google Maps API embedded in the checkout location verification.
+- **Database Architecture:** Utilizes **Prisma ORM** for type-safe database access, schema migrations, and optimized query performance.
+- **Cross-Port Communication:** Implements secure URL-based token passing and sessionStorage validation to maintain user sessions across the isolated Storefront and Seller servers.
 
 ## 💻 Technology Stack
 - **Frontend:** Vanilla HTML5, CSS3, Modern JavaScript (Fetch API, DOM manipulation).
 - **Backend:** Node.js, Express.js.
-- **Database:** Custom local JSON Database (`ecommerce.json`) utilizing efficient In-Memory caching.
+- **Database & ORM:** SQLite database managed via Prisma ORM.
 - **Security & Testing:** JWT, `bcryptjs`, `helmet`, `express-rate-limit`, `jest`, `supertest`.
 
 ## 🛠️ Setup & Installation
@@ -31,42 +29,44 @@ ShopVerse is a premium, full-stack e-commerce platform designed to provide a sea
    ```bash
    npm install
    ```
-3. Set up environment variables by ensuring the `.env` file exists with your `JWT_SECRET` and `PORT`.
-4. Start the application server: 
+3. Set up environment variables by ensuring the `.env` file exists with your `JWT_SECRET`.
+4. Initialize the Prisma database:
    ```bash
-   npm start
+   npx prisma generate
+   npx prisma db push
    ```
-5. Run the test suite (optional):
+5. Start both the Storefront and Seller servers simultaneously: 
    ```bash
-   npm test
+   npm run both
    ```
-6. The server will automatically detect your local network IP. Access the app via your browser:
-   - Local: `http://localhost:3000`
-   - Mobile / Network: `http://<YOUR_LOCAL_IP>:3000`
+6. Access the applications via your browser:
+   - **Storefront (Customers):** `http://localhost:3000`
+   - **Seller Dashboard:** `http://localhost:3001`
 
 ## 🏗️ Technical Architecture
 ```mermaid
 graph TD
-    User((User)) -->|HTTP Requests| Frontend[Web UI - HTML/CSS/JS]
-    Frontend -->|REST API Calls| Backend[Node.js / Express Server]
-    Backend -->|Security Layers| Helmet[Helmet & Rate Limit]
-    Helmet -->|Verify Token| AuthLayer[Auth Middleware]
-    AuthLayer -->|Secure Route| Routes[Express Routes]
-    Routes -->|Read/Write In-Memory| DB[(In-Memory Cache)]
-    DB -->|Async Sync| Disk[(ecommerce.json)]
-    DB -->|Return Data| Routes
-    Routes -->|JSON + GZIP| Frontend
+    User((Customer)) -->|HTTP:3000| StoreFront[Storefront UI]
+    Seller((Seller)) -->|HTTP:3001| SellerDash[Seller Dashboard]
+    
+    StoreFront -->|REST API Calls| AppJS[Main Express App]
+    SellerDash -->|REST API Calls| AppJS
+    
+    AppJS -->|Security Middleware| AuthLayer[JWT Auth & Role Check]
+    AuthLayer -->|CRUD Operations| PrismaClient[Prisma ORM]
+    PrismaClient -->|SQL Queries| SQLite[(SQLite Database)]
 ```
 
 ## 🗂️ File Structure
 ```text
 📦 ShopVerse
- ┣ 📂 public/          # Frontend Assets (HTML, CSS, JS, Images)
- ┣ 📂 routes/          # Express API Routes (auth.js, products.js, cart.js)
- ┣ 📂 middleware/      # JWT Authentication Middleware
- ┣ 📂 tests/           # Jest & Supertest API Test Suite
- ┣ 📜 server.js        # Main Application Entry Point
- ┣ 📜 database.js      # Custom JSON DB Controller with Memory Cache
- ┣ 📜 .env             # Environment Configuration Secrets
- ┗ 📜 package.json     # Project Metadata & Dependencies
+ ┣ 📂 public/          # Frontend Assets (Storefront & Seller Dash)
+ ┣ 📂 routes/          # Express API Routes (auth, products, cart, orders, seller)
+ ┣ 📂 middleware/      # JWT Authentication & Seller Authorization
+ ┣ 📂 prisma/          # Prisma Schema and SQLite Database File
+ ┣ 📜 app.js           # Core Express Application & Global Middleware
+ ┣ 📜 server.store.js  # Server Entry Point for Storefront (Port 3000)
+ ┣ 📜 server.seller.js # Server Entry Point for Seller Dashboard (Port 3001)
+ ┣ 📜 package.json     # Project Metadata & Run Scripts
+ ┗ 📜 .env             # Environment Configuration Secrets
 ```
