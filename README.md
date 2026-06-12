@@ -1,7 +1,13 @@
 # 🛒 ShopVerse: Premium E-Commerce Platform
 **A Modern, Responsive, and Multi-Tenant Online Shopping Experience**
 
-[![Live Demo](https://img.shields.io/badge/Live_Demo-View_ShopVerse-2ea44f?style=for-the-badge&logo=googlecloud)](https://ecommerce-10494438820.us-central1.run.app)
+[![Live Demo](https://img.shields.io/badge/Live_Demo-View_ShopVerse-2ea44f?style=for-the-badge&logo=googlecloud)](https://shopverse-app-10494438820.us-central1.run.app)
+
+## 🌐 Live Deployment Links
+- **🛍️ Main Storefront (For Customers):** [https://shopverse-app-10494438820.us-central1.run.app](https://shopverse-app-10494438820.us-central1.run.app)
+  - *Use this link to browse products, add to cart, and checkout.*
+- **👨‍💼 Seller Registration & Dashboard:** [https://shopverse-app-10494438820.us-central1.run.app/register?role=seller](https://shopverse-app-10494438820.us-central1.run.app/register?role=seller)
+  - *Use this link to create a new Seller account. Once registered, you will automatically be redirected to the Seller Dashboard where you can add products and manage orders.*
 
 ShopVerse is a premium, full-stack e-commerce platform designed to provide a seamless shopping experience for customers and a powerful management dashboard for sellers. Built with a robust backend using Express and Prisma ORM, it features secure cross-domain JWT authentication, role-based access, and a fully responsive, beautiful UI.
 
