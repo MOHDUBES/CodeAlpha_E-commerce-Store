@@ -1,282 +1,279 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-theme="dark">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>ShopVerse — Premium E-Commerce</title>
-  <meta name="description" content="Shop the best products at ShopVerse. Electronics, Fashion, Lifestyle and more.">
-  <!-- Google Analytics Mock -->
-  <script async src="https://www.googletagmanager.com/gtag/js?id=G-MOCKTRACKING"></script>
-  <script>
-    window.dataLayer = window.dataLayer || [];
-    function gtag(){dataLayer.push(arguments);}
-    gtag('js', new Date());
-    gtag('config', 'G-MOCKTRACKING');
-  </script>
+  <title>ShopVerse — Futuristic Shopping</title>
   <link rel="icon" type="image/svg+xml" href="/favicon.svg">
-  <link rel="stylesheet" href="/css/style.css?v=6">
+  <link rel="stylesheet" href="/css/style.css?v=52">
+  <script>
+    if (localStorage.getItem('sv_design_v') !== '3') {
+      localStorage.setItem('theme', 'dark');
+      localStorage.setItem('sv_design_v', '3');
+    }
+    const _t = localStorage.getItem('theme') || 'dark';
+    if (_t !== 'dark') document.documentElement.setAttribute('data-theme', 'light');
+  </script>
 </head>
 <body>
-  <header>
-    <div id="navbar-root"></div>
+
+  <!-- Top Nav -->
+  <header class="site-header">
+    <nav class="top-nav">
+      <a href="/" class="brand"><span class="brand-text">Shop<span class="brand-accent">Verse</span></span></a>
+      <div class="search-wrap">
+        <svg class="search-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+        <input type="text" class="search-box" id="search-input" placeholder="Search for products, brands and more..." oninput="filterProducts()">
+      </div>
+      <div class="nav-actions">
+        <div id="nav-auth"></div>
+        <a href="/wishlist" class="nav-icon-btn">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
+          <span class="hide-mobile">Wishlist</span>
+        </a>
+        <a href="/cart" class="nav-icon-btn cart-nav">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/></svg>
+          <span class="hide-mobile">Bag</span>
+          <span class="cart-count" style="display:none">0</span>
+        </a>
+      </div>
+    </nav>
+    <div class="cat-nav">
+      <div class="cat-nav-inner" id="cat-nav-list">
+        <button class="cat-nav-item active" onclick="setCategory('all')">All</button>
+        <button class="cat-nav-item" onclick="setCategory('Electronics')">Electronics</button>
+        <button class="cat-nav-item" onclick="setCategory('Fashion')">Fashion</button>
+        <button class="cat-nav-item" onclick="setCategory('home')">Home & Tech</button>
+        <button class="cat-nav-item" onclick="setCategory('Lifestyle')">Beauty</button>
+      </div>
+    </div>
   </header>
 
-  <main>
-    <div class="container" style="max-width: 1400px; padding-top: 2rem;">
-      
-      <!-- Mega Carousel -->
-      <section class="carousel" id="hero-carousel" aria-label="Promotions Carousel">
-        <div class="carousel-inner" id="carousel-inner">
-          <!-- Slide 1 -->
-          <div class="carousel-item" style="background-image: url('https://images.unsplash.com/photo-1607082348824-0a96f2a4b9da?auto=format&fit=crop&q=80');">
-            <div class="carousel-content">
-              <h1 style="font-size: 3rem; margin-bottom: 1rem; text-shadow: 0 4px 20px rgba(0,0,0,0.5);">Festive Mega Sale!</h1>
-              <p style="font-size: 1.2rem; margin-bottom: 2rem;">Up to 70% OFF on Top Electronics & Fashion.</p>
-              <button class="btn btn-primary" aria-label="Shop Deals" onclick="document.getElementById('deals-section').scrollIntoView({behavior:'smooth'})">Shop Deals</button>
-            </div>
-          </div>
-          <!-- Slide 2 -->
-          <div class="carousel-item" style="background-image: url('https://images.unsplash.com/photo-1441986300917-64674bd600d8?auto=format&fit=crop&q=80');">
-            <div class="carousel-content">
-              <h1 style="font-size: 3rem; margin-bottom: 1rem;">Trending Styles</h1>
-              <p style="font-size: 1.2rem; margin-bottom: 2rem;">Upgrade your wardrobe with our latest collection.</p>
-              <button class="btn btn-primary" aria-label="View Fashion" onclick="selectCategory('Fashion')">View Fashion</button>
-            </div>
-          </div>
-          <!-- Slide 3 -->
-          <div class="carousel-item" style="background-image: url('https://images.unsplash.com/photo-1498049794561-7780e7231661?auto=format&fit=crop&q=80');">
-            <div class="carousel-content">
-              <h1 style="font-size: 3rem; margin-bottom: 1rem;">Tech That Moves You</h1>
-              <p style="font-size: 1.2rem; margin-bottom: 2rem;">Discover the future with our top-rated gadgets.</p>
-              <button class="btn btn-primary" aria-label="Explore Tech" onclick="selectCategory('Electronics')">Explore Tech</button>
-            </div>
+  <!-- Hero Carousel -->
+  <section class="hero-carousel">
+    <div class="hero-slides" id="hero-slides">
+      <!-- Slide 1: Trimmers -->
+      <div class="hero-slide banner-slide" style="background: #e2dfd8;" onclick="setCategory('home')">
+        <div class="banner-content">
+          <div class="banner-text-wrapper" style="color: #000;">
+            <h2 style="font-size: 3.5rem; font-weight: 900; margin-bottom: 5px; color: #000; text-shadow: none;">Under ₹999</h2>
+            <p style="font-size: 1.5rem; font-weight: 500; margin-bottom: 20px; color: #111;">Trimmers & more</p>
+            <div style="font-size: 1.2rem; font-weight: 800; letter-spacing: 1px;">PHILIPS <span style="font-weight: 300; margin: 0 10px;">|</span> ZLADE</div>
           </div>
         </div>
-        <div class="carousel-indicators">
-          <div class="indicator active" aria-label="Slide 1" onclick="goToSlide(0)"></div>
-          <div class="indicator" aria-label="Slide 2" onclick="goToSlide(1)"></div>
-          <div class="indicator" aria-label="Slide 3" onclick="goToSlide(2)"></div>
+        <div class="banner-image">
+          <img src="https://images.unsplash.com/photo-1626806819282-2c1dc01a5e0c?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80" alt="Trimmers">
         </div>
-      </section>    <!-- Deals of the Day Row -->
-    <div class="horizontal-scroll-container" id="deals-section">
-      <div class="section-title">
-        ⚡ Deals of the Day
-        <a href="#all-products" class="view-all">View All</a>
       </div>
-      <div class="horizontal-scroll-row" id="deals-row">
-        <!-- Rendered via JS -->
+
+      <!-- Slide 2: Audio -->
+      <div class="hero-slide banner-slide" style="background: #f0f4f8;" onclick="setCategory('Electronics')">
+        <div class="banner-content">
+          <div class="banner-text-wrapper" style="color: #111;">
+            <p style="font-size: 1.2rem; margin-bottom: 5px; color: #333;">Limited time offer</p>
+            <h2 style="font-size: 4rem; font-weight: 900; margin-bottom: 5px; color: #000; text-shadow: none;">Up to 70% off</h2>
+            <p style="font-size: 1.8rem; font-weight: 500; color: #222;">Bestselling audio</p>
+          </div>
+        </div>
+        <div class="banner-image">
+          <img src="https://images.unsplash.com/photo-1618366712010-f4ae9c647dcb?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80" alt="Audio">
+        </div>
+      </div>
+
+      <!-- Slide 3: Fashion -->
+      <div class="hero-slide banner-slide" style="background: linear-gradient(90deg, #ff416c, #ff4b2b);" onclick="setCategory('Fashion')">
+        <div class="banner-content" style="justify-content: center; align-items: center; text-align: center;">
+          <div class="banner-text-wrapper" style="color: #fff;">
+            <h2 style="font-size: 4.5rem; font-weight: 900; letter-spacing: 2px; text-transform: uppercase; margin-bottom: 0; line-height: 1; text-shadow: none;">End of<br>Reason Sale</h2>
+            <div style="background: #fff; color: #ff416c; display: inline-block; padding: 5px 20px; font-weight: 900; font-size: 1.8rem; margin-top: 15px;">EXTRA 10% OFF</div>
+          </div>
+        </div>
+        <div class="banner-image" style="background-image: url('https://images.unsplash.com/photo-1483985988355-763728e1935b?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80'); background-size: cover; background-position: top; opacity: 0.8;">
+        </div>
+      </div>
+    </div>
+    <div class="hero-arrow hero-prev" onclick="moveSlide(-1)">❮</div>
+    <div class="hero-arrow hero-next" onclick="moveSlide(1)">❯</div>
+    <div class="hero-dots" id="hero-dots"></div>
+  </section>
+
+  <div class="page-body">
+    <!-- Category Banners -->
+    <div class="cat-banners">
+      <div class="cat-banner" style="background: linear-gradient(45deg, #1A2980, #26D0CE);" onclick="setCategory('Electronics')">
+        <div class="cat-banner-text">
+          <div class="cat-banner-sub">Premium Tech</div>
+          <h3>Electronics</h3>
+          <span class="cat-banner-cta">Explore →</span>
+        </div>
+        <div class="cat-banner-img">🎧</div>
+      </div>
+      <div class="cat-banner" style="background: linear-gradient(45deg, #F09819, #EDDE5D);" onclick="setCategory('Fashion')">
+        <div class="cat-banner-text">
+          <div class="cat-banner-sub">Latest Trends</div>
+          <h3>Fashion</h3>
+          <span class="cat-banner-cta">Explore →</span>
+        </div>
+        <div class="cat-banner-img">👟</div>
+      </div>
+      <div class="cat-banner" style="background: linear-gradient(45deg, #8E2DE2, #4A00E0);" onclick="setCategory('home')">
+        <div class="cat-banner-text">
+          <div class="cat-banner-sub">Smart Living</div>
+          <h3>Home</h3>
+          <span class="cat-banner-cta">Explore →</span>
+        </div>
+        <div class="cat-banner-img">🛋️</div>
       </div>
     </div>
 
-    <!-- Electronics Row -->
-    <div class="horizontal-scroll-container">
-      <div class="section-title">
-        💻 Best Selling Electronics
-        <a href="#" class="view-all" onclick="event.preventDefault(); selectCategory('Electronics')">View All</a>
+    <div class="product-section">
+      <div class="sec-header">
+        <div class="sec-title">
+          <span class="sec-icon">⚡</span>
+          <h2>Discover Products</h2>
+        </div>
+        <div class="filter-row">
+          <select class="sort-dd" id="sort-select" onchange="filterProducts()">
+            <option value="popular">Most Popular</option>
+            <option value="price_low">Price: Low to High</option>
+            <option value="price_high">Price: High to Low</option>
+          </select>
+        </div>
       </div>
-      <div class="horizontal-scroll-row" id="electronics-row">
-        <!-- Rendered via JS -->
+
+      <div class="loading" id="loading">
+        <div class="dot"></div><div class="dot"></div><div class="dot"></div>
       </div>
-    </div>
 
-    <hr style="border:0; border-top: 1px solid var(--border); margin: 3rem 0;">
-
-    <!-- All Products & Filters -->
-    <h2 class="section-title" id="all-products">Explore All Products</h2>
-    <div class="filter-bar" id="filter-bar">
-      <span class="filter-label">Category:</span>
-      <div id="category-filters" style="display:flex;gap:0.5rem;flex-wrap:wrap"></div>
-      <select class="sort-select" id="sort-select" onchange="filterProducts()">
-        <option value="">Sort: Default</option>
-        <option value="price_asc">Price: Low to High</option>
-        <option value="price_desc">Price: High to Low</option>
-        <option value="rating">Top Rated</option>
-      </select>
-    </div>
-
-    <div class="loading" id="loading">
-      <div class="dot"></div><div class="dot"></div><div class="dot"></div>
-    </div>
-    
-    <div class="products-grid" id="products-grid" style="display:none; margin-bottom: 4rem;"></div>
-    
-    <div id="empty-products" class="empty-state" style="display:none; margin-bottom: 4rem;">
-      <div class="empty-icon">🤷</div>
-      <div class="empty-title">No products found</div>
-      <div class="empty-text">Try different search terms or category</div>
+      <div class="main-grid" id="products-grid" style="display:none"></div>
     </div>
   </div>
-  </main>
 
-  <footer class="mega-footer">
-    <div class="mega-footer-top">
-      <div class="mega-footer-col">
-        <h3>Get to Know Us</h3>
-        <a href="#">About ShopVerse</a>
+  <footer class="site-footer">
+    <div class="footer-top">
+      <div class="footer-col">
+        <h4>ShopVerse</h4>
+        <a href="#">About Us</a>
         <a href="#">Careers</a>
-        <a href="#">Press Releases</a>
-        <a href="#">ShopVerse Science</a>
+        <a href="#">Press</a>
       </div>
-      <div class="mega-footer-col">
-        <h3>Connect with Us</h3>
-        <a href="#">Facebook</a>
-        <a href="#">Twitter</a>
+      <div class="footer-col">
+        <h4>Help</h4>
+        <a href="#">Customer Service</a>
+        <a href="#">Track Order</a>
+        <a href="#">Returns</a>
+      </div>
+      <div class="footer-col">
+        <h4>Connect</h4>
         <a href="#">Instagram</a>
-      </div>
-      <div class="mega-footer-col">
-        <h3>Make Money with Us</h3>
-        <a href="#">Sell on ShopVerse</a>
-        <a href="#">Protect and Build Your Brand</a>
-        <a href="#">ShopVerse Global Selling</a>
-        <a href="#">Supply to ShopVerse</a>
-        <a href="#">Become an Affiliate</a>
-      </div>
-      <div class="mega-footer-col">
-        <h3>Let Us Help You</h3>
-        <a href="#">Your Account</a>
-        <a href="#">Returns Centre</a>
-        <a href="#">100% Purchase Protection</a>
-        <a href="#">ShopVerse App Download</a>
-        <a href="#">Help</a>
+        <a href="#">Twitter</a>
+        <a href="#">Facebook</a>
       </div>
     </div>
-    <div class="mega-footer-mid">
-      <div class="logo">ShopVerse</div>
-      <button class="btn btn-outline btn-sm">🌐 English</button>
-      <button class="btn btn-outline btn-sm">🇮🇳 India</button>
-    </div>
-    <div class="mega-footer-bottom">
-      <div class="mega-footer-bottom-grid">
-        <div class="mega-footer-bottom-col">
-          <a href="#"><span>AbeBooks</span>Books, art<br>& collectibles</a>
-        </div>
-        <div class="mega-footer-bottom-col">
-          <a href="#"><span>ShopVerse Web Services</span>Scalable Cloud<br>Computing Services</a>
-        </div>
-        <div class="mega-footer-bottom-col">
-          <a href="#"><span>Audible</span>Download<br>Audio Books</a>
-        </div>
-        <div class="mega-footer-bottom-col">
-          <a href="#"><span>IMDb</span>Movies, TV<br>& Celebrities</a>
-        </div>
-      </div>
-      <div class="mega-footer-legal">
-        <div style="margin-bottom:0.5rem;">
-          <a href="#">Conditions of Use & Sale</a>
-          <a href="#">Privacy Notice</a>
-          <a href="#">Interest-Based Ads</a>
-        </div>
-      </div>
+    <div class="footer-bottom">
+      <div class="footer-brand">Shop<span>Verse</span></div>
+      <div class="footer-legal">&copy; 2026 ShopVerse. All rights reserved.</div>
     </div>
   </footer>
 
-  <script src="/js/main.js?v=14"></script>
+  <script src="/js/main.js?v=21"></script>
   <script>
-    let allProducts = [];
-    let activeCategory = 'All';
-
-    // Carousel Logic
-    let currentSlide = 0;
-    const totalSlides = 3;
-    function goToSlide(index) {
-      currentSlide = index;
-      document.getElementById('carousel-inner').style.transform = `translateX(-${currentSlide * 100}%)`;
-      const indicators = document.querySelectorAll('.indicator');
-      indicators.forEach((ind, i) => {
-        ind.classList.toggle('active', i === currentSlide);
-      });
-    }
-    setInterval(() => {
-      goToSlide((currentSlide + 1) % totalSlides);
-    }, 4000);
-
-    // Init Page
-    async function init() {
-      document.getElementById('navbar-root').innerHTML = renderNavbar('home');
-      updateNavAuth();
-      updateCartCount();
-      await fetchUserWishlist(); // from main.js
-
-      const urlQ = new URLSearchParams(window.location.search).get('q');
-      if (urlQ) document.getElementById('search-input').value = urlQ;
-
-      await loadCategories();
-      await loadProducts();
-    }
-
-    async function loadCategories() {
-      try {
-        const res = await fetch(`${API}/products/categories`);
-        const cats = await res.json();
-        const container = document.getElementById('category-filters');
-        container.innerHTML = cats.map(cat => `
-          <button class="category-btn ${cat === 'All' ? 'active' : ''}" 
-            onclick="selectCategory('${cat}')" data-cat="${cat}">${cat}</button>
-        `).join('');
-      } catch {}
-    }
-
-    function selectCategory(cat) {
-      activeCategory = cat;
-      document.querySelectorAll('.category-btn').forEach(b => {
-        b.classList.toggle('active', b.dataset.cat === cat);
-      });
-      // Scroll to all products section when category is clicked
-      document.getElementById('all-products').scrollIntoView({ behavior: 'smooth' });
-      filterProducts();
-    }
+    let products = [];
+    let currentCategory = 'all';
 
     async function loadProducts() {
       try {
         const res = await fetch(`${API}/products`);
-        allProducts = await res.json();
-        
-        // Render Deals Row
-        const deals = allProducts.filter(p => p.is_deal_of_day);
-        document.getElementById('deals-row').innerHTML = deals.map(createProductCardHTML).join('');
-
-        // Render Electronics Row
-        const electronics = allProducts.filter(p => p.category === 'Electronics').slice(0, 5);
-        document.getElementById('electronics-row').innerHTML = electronics.map(createProductCardHTML).join('');
-
-        // Render All
+        products = await res.json();
+        document.getElementById('loading').style.display = 'none';
+        document.getElementById('products-grid').style.display = 'grid';
         filterProducts();
-      } catch {
-        showToast('Failed to load products', 'error');
+      } catch (err) {
+        document.getElementById('loading').innerHTML = '<p style="color:var(--danger)">Failed to load products. Server might be down.</p>';
       }
+    }
+
+    function setCategory(cat) {
+      currentCategory = cat;
+      document.querySelectorAll('.cat-nav-item').forEach(el => el.classList.remove('active'));
+      document.querySelector(`[onclick="setCategory('${cat}')"]`)?.classList.add('active');
+      filterProducts();
+      document.getElementById('products-grid').scrollIntoView({ behavior: 'smooth' });
     }
 
     function filterProducts() {
-      const search = document.getElementById('search-input')?.value?.toLowerCase() || '';
+      const q = document.getElementById('search-input').value.toLowerCase();
       const sort = document.getElementById('sort-select').value;
-
-      let filtered = allProducts.filter(p => {
-        const matchCat = activeCategory === 'All' || p.category === activeCategory;
-        const matchSearch = p.name.toLowerCase().includes(search) || 
-                           p.description.toLowerCase().includes(search);
+      
+      let filtered = products.filter(p => {
+        const matchCat = currentCategory === 'all' || (p.category && p.category.toLowerCase() === currentCategory.toLowerCase());
+        const matchSearch = p.name.toLowerCase().includes(q) || p.description.toLowerCase().includes(q);
         return matchCat && matchSearch;
       });
 
-      if (sort === 'price_asc') filtered.sort((a,b) => a.price - b.price);
-      if (sort === 'price_desc') filtered.sort((a,b) => b.price - a.price);
-      if (sort === 'rating') filtered.sort((a,b) => b.rating - a.rating);
+      if (sort === 'price_low') filtered.sort((a,b) => a.price - b.price);
+      if (sort === 'price_high') filtered.sort((a,b) => b.price - a.price);
 
       const grid = document.getElementById('products-grid');
-      const loading = document.getElementById('loading');
-      const empty = document.getElementById('empty-products');
-
-      loading.style.display = 'none';
       if (filtered.length === 0) {
-        grid.style.display = 'none';
-        empty.style.display = 'block';
+        grid.innerHTML = `<div class="empty-state" style="grid-column: 1/-1;"><h3>No products found</h3><p>Try adjusting your filters or search query.</p></div>`;
       } else {
-        grid.style.display = '';
-        empty.style.display = 'none';
-        grid.innerHTML = filtered.map(createProductCardHTML).join('');
+        grid.innerHTML = filtered.map(p => createProductCardHTML(p)).join('');
       }
     }
 
-    document.addEventListener('DOMContentLoaded', init);
+    // Hero Carousel Logic
+    let currentSlide = 0;
+    const slidesContainer = document.getElementById('hero-slides');
+    const dotsContainer = document.getElementById('hero-dots');
+    const slideCount = document.querySelectorAll('.hero-slide').length;
+    let slideInterval;
+
+    function initCarousel() {
+      for(let i=0; i<slideCount; i++) {
+        const dot = document.createElement('button');
+        dot.className = 'hero-dot' + (i===0?' active':'');
+        dot.onclick = () => goToSlide(i);
+        dotsContainer.appendChild(dot);
+      }
+      startSlideTimer();
+    }
+
+    function updateCarousel() {
+      slidesContainer.style.transform = `translateX(-${currentSlide * 100}%)`;
+      document.querySelectorAll('.hero-dot').forEach((d,i) => {
+        d.classList.toggle('active', i === currentSlide);
+      });
+    }
+
+    function moveSlide(dir) {
+      currentSlide = (currentSlide + dir + slideCount) % slideCount;
+      updateCarousel();
+      resetSlideTimer();
+    }
+
+    function goToSlide(idx) {
+      currentSlide = idx;
+      updateCarousel();
+      resetSlideTimer();
+    }
+
+    function startSlideTimer() { slideInterval = setInterval(() => moveSlide(1), 5000); }
+    function resetSlideTimer() { clearInterval(slideInterval); startSlideTimer(); }
+
+    document.addEventListener('DOMContentLoaded', () => {
+      initCarousel();
+      loadProducts();
+      updateNavAuth();
+      updateCartCount();
+
+      // Handle search query from URL
+      const urlParams = new URLSearchParams(window.location.search);
+      const q = urlParams.get('q');
+      if (q) {
+        document.getElementById('search-input').value = q;
+      }
+    });
   </script>
 </body>
 </html>

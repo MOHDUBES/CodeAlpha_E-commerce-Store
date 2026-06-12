@@ -5,13 +5,131 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Login — ShopVerse</title>
   <link rel="icon" type="image/svg+xml" href="/favicon.svg">
-  <link rel="stylesheet" href="/css/style.css">
+  <link rel="stylesheet" href="/css/style.css?v=43">
+  <style>
+    body {
+      background: var(--bg-base);
+      font-family: 'Inter', -apple-system, sans-serif;
+      margin: 0;
+      color: var(--text);
+    }
+    .auth-layout {
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 2rem;
+      background: var(--bg-base);
+    }
+    .auth-card {
+      background: var(--bg-surface);
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      padding: 3rem 2.5rem;
+      width: 100%;
+      max-width: 400px;
+      box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+    }
+    .auth-logo {
+      font-size: 2.2rem;
+      font-weight: 800;
+      text-align: center;
+      background: linear-gradient(to right, #D884E0, #F79CD4);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      margin-bottom: 0.2rem;
+      text-decoration: underline;
+      text-decoration-color: rgba(216, 132, 224, 0.4);
+      text-underline-offset: 4px;
+    }
+    .auth-subtitle {
+      text-align: center;
+      color: var(--text-2);
+      font-size: 0.95rem;
+      margin-bottom: 2.5rem;
+    }
+    .form-group {
+      margin-bottom: 1.25rem;
+    }
+    .form-label {
+      display: block;
+      color: var(--text-2);
+      font-size: 0.85rem;
+      font-weight: 500;
+      margin-bottom: 0.5rem;
+    }
+    .form-input {
+      width: 100%;
+      background: var(--bg-raised);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 0.8rem 1rem;
+      color: var(--text);
+      font-size: 0.95rem;
+      outline: none;
+      transition: border-color 0.2s;
+      box-sizing: border-box;
+    }
+    .form-input:focus {
+      border-color: #8E54E9;
+    }
+    .auth-btn {
+      width: 100%;
+      background: linear-gradient(to right, #7b58f4, #eb699a);
+      color: var(--text);
+      border: none;
+      border-radius: 10px;
+      padding: 0.9rem;
+      font-size: 1rem;
+      font-weight: 600;
+      cursor: pointer;
+      margin-top: 1rem;
+      transition: opacity 0.2s;
+    }
+    .auth-btn:hover {
+      opacity: 0.9;
+    }
+    .auth-links {
+      display: flex;
+      justify-content: flex-end;
+      margin-top: 0.5rem;
+    }
+    .auth-link {
+      color: #6a5fe8;
+      font-size: 0.85rem;
+      text-decoration: none;
+      font-weight: 500;
+    }
+    .auth-link:hover {
+      text-decoration: underline;
+    }
+    .auth-switch {
+      text-align: center;
+      margin-top: 1.5rem;
+      color: var(--text-2);
+      font-size: 0.9rem;
+    }
+    .auth-switch a {
+      color: #6a5fe8;
+      font-weight: 600;
+      text-decoration: none;
+    }
+    .demo-banner {
+      margin-top: 2rem;
+      background: var(--bg-raised);
+      padding: 1rem;
+      border-radius: 8px;
+      font-size: 0.85rem;
+      color: var(--text-2);
+      text-align: center;
+    }
+  </style>
 </head>
 <body>
-  <div class="auth-wrapper">
+  <div class="auth-layout">
     <div class="auth-card">
-      <a href="/" style="display:block">
-        <div class="auth-logo">️ ShopVerse</div>
+      <a href="/" style="text-decoration: none; display: block;">
+        <div class="auth-logo">ShopVerse</div>
       </a>
       <p class="auth-subtitle">Welcome back! Sign in to your account</p>
 
@@ -23,31 +141,47 @@
         <div class="form-group">
           <label class="form-label">Password</label>
           <input type="password" id="login-password" class="form-input" placeholder="Your password" required>
-          <div style="text-align:right;margin-top:0.4rem">
-            <a href="/forgot-password" style="font-size:0.8rem;color:var(--accent);text-decoration:none">Forgot Password?</a>
+          <div class="auth-links">
+            <a href="/forgot-password" class="auth-link">Forgot Password?</a>
           </div>
         </div>
 
-        <div id="login-error" style="display:none;color:var(--danger);font-size:0.85rem;margin-bottom:1rem;padding:0.7rem;background:rgba(255,77,109,0.1);border-radius:8px;border:1px solid rgba(255,77,109,0.3)"></div>
+        <div id="login-error" style="display:none;color:#ff4d6d;font-size:0.85rem;margin-bottom:1rem;padding:0.7rem;background:rgba(255,77,109,0.1);border-radius:8px;border:1px solid rgba(255,77,109,0.3)"></div>
 
-        <button type="submit" class="btn btn-primary" id="login-btn" style="width:100%;justify-content:center">
+        <button type="submit" class="auth-btn" id="login-btn">
           Sign In →
         </button>
       </form>
 
       <div class="auth-switch">
-        Don't have an account? <a href="/register">Sign Up</a>
+        Don't have an account? <a href="/register" id="signup-link">Sign Up</a>
       </div>
 
-      <div style="margin-top:1.5rem;padding:1rem;background:var(--bg-secondary);border-radius:10px;font-size:0.82rem;color:var(--text-secondary)">
-         <strong>Demo:</strong> Register a new account to test all features
+      <div class="demo-banner">
+        <strong style="color:#d1d5db">Demo:</strong> Register a new account to test all features
       </div>
     </div>
   </div>
 
-  <script src="/js/main.js?v=2"></script>
+  <script src="/js/main.js?v=20"></script>
   <script>
-    if (isLoggedIn()) window.location = '/';
+    const urlParams = new URLSearchParams(window.location.search);
+    const isSellerUrl = urlParams.get('role') === 'seller';
+
+    if (isSellerUrl) {
+      document.querySelector('.auth-subtitle').textContent = 'Welcome back! Sign in to your Seller account';
+      document.querySelector('.auth-logo').innerHTML = 'ShopVerse <span style="font-size:1.2rem; color:var(--text-2); font-weight: 500;">Seller</span>';
+      document.getElementById('signup-link').href = '/register?role=seller';
+    }
+
+    if (isLoggedIn()) {
+      const u = getUser();
+      if (isSellerUrl && u && u.role === 'seller') {
+        window.location = '/seller-dashboard';
+      } else {
+        window.location = '/';
+      }
+    }
 
     async function handleLogin(e) {
       e.preventDefault();
@@ -70,7 +204,11 @@
         if (data.token) {
           localStorage.setItem('token', data.token);
           localStorage.setItem('user', JSON.stringify(data.user));
-          window.location = '/';
+          if (data.user.role === 'seller' && isSellerUrl) {
+            window.location.href = '/seller-dashboard';
+          } else {
+            window.location.href = '/';
+          }
         } else {
           errEl.textContent = data.error || 'Login failed';
           errEl.style.display = 'block';

@@ -4,351 +4,730 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Secure Checkout — ShopVerse</title>
-  <!-- Google Analytics Mock -->
-  <script async src="https://www.googletagmanager.com/gtag/js?id=G-MOCKTRACKING"></script>
-  <script>
-    window.dataLayer = window.dataLayer || [];
-    function gtag(){dataLayer.push(arguments);}
-    gtag('js', new Date());
-    gtag('config', 'G-MOCKTRACKING');
-  </script>
-  <!-- Google Maps JS API Mock -->
-  <script src="https://maps.googleapis.com/maps/api/js?key=MOCK_API_KEY&libraries=places"></script>
   <link rel="icon" type="image/svg+xml" href="/favicon.svg">
-  <link rel="stylesheet" href="/css/style.css">
+  <link rel="stylesheet" href="/css/style.css?v=43">
   <style>
-    .checkout-item-card {
-      display: flex;
-      gap: 1rem;
-      padding: 1rem;
+    body {
+      background: var(--bg-base);
+      color: var(--text);
+      font-family: 'Inter', -apple-system, sans-serif;
+    }
+    .checkout-wrapper {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 2rem;
+    }
+    .checkout-header {
+      margin-bottom: 2rem;
       border-bottom: 1px solid var(--border);
+      padding-bottom: 1.5rem;
+    }
+    .checkout-header h1 {
+      font-size: 1.8rem;
+      font-weight: 800;
+      margin: 1rem 0 0.2rem 0;
+    }
+    .checkout-header p {
+      color: var(--text-2);
+      font-size: 0.95rem;
+    }
+    .back-btn {
+      display: inline-block;
+      padding: 0.5rem 1rem;
+      background: transparent;
+      border: 1px solid #2d3b8e;
+      color: #5c6fff;
+      border-radius: 6px;
+      text-decoration: none;
+      font-size: 0.85rem;
+      font-weight: 600;
+      transition: all 0.2s;
+    }
+    .back-btn:hover {
+      background: rgba(92, 111, 255, 0.1);
+    }
+    .checkout-grid {
+      display: grid;
+      grid-template-columns: 1.5fr 1fr;
+      gap: 2rem;
+    }
+    @media (max-width: 900px) {
+      .checkout-grid { grid-template-columns: 1fr; }
+    }
+    
+    /* Left Column Sections */
+    .checkout-section {
+      background: var(--bg-surface);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 1.5rem;
+      margin-bottom: 1.5rem;
+    }
+    .checkout-section h2 {
+      font-size: 1.2rem;
+      font-weight: 700;
+      margin-bottom: 1.5rem;
+      display: flex;
       align-items: center;
+      gap: 0.5rem;
     }
-    .checkout-item-card img {
-      width: 70px;
-      height: 70px;
-      object-fit: cover;
-      border-radius: 8px;
+    
+    /* Form Inputs */
+    .form-group {
+      margin-bottom: 1.2rem;
     }
-    .checkout-item-details {
-      flex: 1;
+    .form-group label {
+      display: block;
+      color: var(--text-2);
+      font-size: 0.85rem;
+      margin-bottom: 0.4rem;
     }
-    .payment-opt {
-      padding: 1rem;
+    .form-input {
+      width: 100%;
+      background: var(--bg-base);
       border: 1px solid var(--border);
       border-radius: 8px;
-      margin-bottom: 1rem;
-      cursor: pointer;
-      display: flex;
-      align-items: center;
+      padding: 0.8rem;
+      color: var(--text);
+      font-size: 0.95rem;
+      box-sizing: border-box;
+      outline: none;
+      transition: border-color 0.2s;
+    }
+    .form-input:focus { border-color: #5c6fff; }
+    .form-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
       gap: 1rem;
-      transition: all 0.3s ease;
     }
-    .payment-opt.selected {
-      border-color: var(--accent);
-      background: rgba(108, 99, 255, 0.05);
+    
+    /* Map Box */
+    .map-box {
+      margin-top: 1rem;
     }
-    .payment-opt.selected::before {
+    .map-box label { display: block; color: var(--text-2); font-size: 0.85rem; margin-bottom: 0.4rem; }
+    .map-container {
+      width: 100%;
+      height: 150px;
+      border-radius: 8px;
+      overflow: hidden;
+      border: 1px solid var(--border);
+      position: relative;
+    }
+    /* Payment Options */
+    .payment-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      gap: 1rem;
+    }
+    @media (max-width: 700px) {
+      .payment-grid { grid-template-columns: 1fr; }
+    }
+    .payment-card {
+      background: var(--bg-base);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 1rem;
+      text-align: center;
+      cursor: pointer;
+      position: relative;
+      transition: all 0.2s;
+      min-height: 120px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+    }
+    .payment-card:hover { border-color: #3b4b94; }
+    .payment-card.selected {
+      border: 2px solid #6b5ceb;
+      background: rgba(107, 92, 235, 0.05);
+    }
+    .payment-card.selected::before {
       content: '✔';
-      color: var(--accent);
-      font-weight: bold;
+      position: absolute;
+      left: 10px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: #6b5ceb;
+      font-size: 1.2rem;
     }
-    .payment-opt-title {
+    .payment-title { font-weight: 600; font-size: 0.95rem; margin-bottom: 0.4rem; color:var(--text); }
+    .payment-subtitle { font-size: 0.75rem; color: var(--text-2); line-height: 1.3; }
+    .open-box-text { color: #1ed760; font-weight: 600; font-size: 0.85rem; margin-top: 0.3rem; }
+    
+    /* Right Column - Order Summary */
+    .summary-section {
+      background: var(--bg-surface);
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      padding: 1.5rem;
+      margin-bottom: 1rem;
+    }
+    .badge-pink {
+      color: #ff3f6c;
+      border: 1px solid #ff3f6c;
+      padding: 0.2rem 0.6rem;
+      border-radius: 4px;
+      font-size: 0.8rem;
       font-weight: 600;
-      font-size: 1.1rem;
+      cursor: pointer;
+      background: transparent;
     }
-    .payment-opt-desc {
+    .summary-title {
+      color: var(--text-2);
       font-size: 0.85rem;
-      color: var(--text-secondary);
-      margin-top: 0.2rem;
+      font-weight: 700;
+      letter-spacing: 0.5px;
+      margin-bottom: 1rem;
+    }
+    .summary-section h3 {
+      font-size: 1.1rem;
+      font-weight: 700;
+      margin-bottom: 1.5rem;
+    }
+    .summary-item {
+      display: flex;
+      gap: 1rem;
+      margin-bottom: 1.2rem;
+      padding-bottom: 1.2rem;
+      border-bottom: 1px solid var(--border);
+    }
+    .summary-item-img {
+      width: 60px; height: 60px;
+      background: var(--bg-raised);
+      border-radius: 8px;
+      object-fit: contain;
+    }
+    .summary-item-details { flex: 1; }
+    .summary-item-name { font-weight: 600; font-size: 0.9rem; margin-bottom: 0.3rem; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+    .summary-item-meta { display: flex; justify-content: space-between; font-size: 0.8rem; color: var(--text-2); }
+    .summary-item-remove { color: #ff4d4d; cursor: pointer; text-decoration: none; font-weight: 500; }
+    .summary-item-price { color: #5c6fff; font-weight: 700; font-size: 0.95rem; }
+    
+    .summary-row {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 0.8rem;
+      font-size: 0.9rem;
+      color: var(--text-2);
+    }
+    .summary-row.total {
+      margin-top: 1.2rem;
+      padding-top: 1.2rem;
+      border-top: 1px dashed var(--border);
+      color: var(--text);
+      font-size: 1.2rem;
+      font-weight: 800;
+    }
+    .place-order-btn {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      width: 100%;
+      background: #ff3f6c; /* Myntra pink */
+      color: #fff;
+      padding: 0.8rem;
+      border-radius: 4px;
+      font-weight: 700;
+      font-size: 0.95rem;
+      margin-top: 1rem;
+      text-decoration: none;
+      border: none;
+      cursor: pointer;
+    }
+    .place-order-btn:hover { background: #ed3863; }
+    .terms-text {
+      text-align: center;
+      font-size: 0.75rem;
+      color: var(--text-2);
+      margin-top: 1rem;
+      line-height: 1.4;
     }
   </style>
 </head>
 <body>
   <div id="navbar-root"></div>
 
-  <div id="order-success" style="display:none; padding-top: 4rem;">
-    <div class="success-wrapper">
-      <div class="success-card" style="margin: 0 auto;">
-        <div class="success-icon" style="font-size: 4rem; margin-bottom: 1rem;">🎉</div>
-        <h1 style="font-size:1.8rem;font-weight:800;margin-bottom:0.5rem">Order Placed Successfully!</h1>
-        <p style="color:var(--text-secondary);margin-bottom:1.5rem">Thank you for shopping with ShopVerse.</p>
-        <div style="background: var(--bg-secondary); padding: 1.5rem; border-radius: 12px; margin-bottom: 2rem;">
-          <p id="order-id-text" style="font-weight:600;margin-bottom:0.5rem"></p>
-          <p id="order-total-text" style="font-size:1.5rem;font-weight:800; color: var(--accent);"></p>
-        </div>
-        <p style="color:var(--success);font-size:0.9rem;margin-bottom:2rem; font-weight: 600;">
-           📦 Open Box Delivery Available at your doorstep.
-        </p>
-        <div style="display:flex;gap:1rem;flex-wrap:wrap;justify-content:center">
-          <a href="/orders" class="btn btn-primary">Track Order</a>
-          <a href="/" class="btn btn-outline">Continue Shopping</a>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <div id="checkout-main">
-    <div class="page-header container" style="padding-top: 2rem;">
-      <div style="margin-bottom: 1rem;"><a href="/cart" class="btn btn-outline btn-sm">&larr; Back to Cart</a></div>
-      <h1 class="page-title">Secure Checkout 🔒</h1>
-      <p class="page-subtitle">Complete your order securely</p>
+  <div class="checkout-wrapper" id="checkout-wrapper" style="display:none">
+    <div class="checkout-header">
+      <a href="/cart" class="back-btn">&larr; Back to Cart</a>
+      <h1>Secure Checkout 🔒</h1>
+      <p>Complete your order securely</p>
     </div>
 
-    <div class="container">
-      <div class="checkout-layout">
-        <!-- Left Column: Forms -->
-        <div>
-          <!-- Delivery Details -->
-          <div class="card" style="padding:1.5rem;margin-bottom:1.5rem">
-            <div class="section-title">📍 Delivery Address</div>
-            <div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem">
-              <div class="form-group" style="grid-column:1/-1">
-                <label class="form-label">Full Name *</label>
-                <input type="text" id="del-name" class="form-input" placeholder="Enter your full name">
-              </div>
-              <div class="form-group" style="grid-column:1/-1">
-                <label class="form-label">Email Address *</label>
-                <input type="email" id="del-email" class="form-input" placeholder="you@example.com">
-              </div>
-              <div class="form-group" style="grid-column:1/-1">
-                <label class="form-label">Complete Address *</label>
-                <input type="text" id="del-address" class="form-input" placeholder="House/Flat No, Street, Landmark">
+    <form onsubmit="handleCheckout(event)">
+      <div class="checkout-grid">
+        
+        <!-- Left Column -->
+        <div class="left-col">
+          
+          <!-- Delivery Address -->
+          <div class="checkout-section">
+            <h2>📍 Delivery Address</h2>
+            <div class="form-group">
+              <label>Full Name *</label>
+              <input type="text" id="name" class="form-input" required placeholder="jain malik">
+            </div>
+            <div class="form-group">
+              <label>Email Address *</label>
+              <input type="email" id="email" class="form-input" required placeholder="jainmalik70@gmail.com">
+            </div>
+            <div class="form-group">
+              <label>Complete Address *</label>
+              <input type="text" id="address" class="form-input" required placeholder="House/Flat No, Street, Landmark">
+            </div>
+            <div class="form-row">
+              <div class="form-group">
+                <label>City *</label>
+                <input type="text" id="city" class="form-input" required placeholder="e.g. Mumbai">
               </div>
               <div class="form-group">
-                <label class="form-label">City *</label>
-                <input type="text" id="del-city" class="form-input" placeholder="e.g. Mumbai">
-              </div>
-              <div class="form-group">
-                <label class="form-label">PIN Code *</label>
-                <input type="text" id="del-pin" class="form-input" placeholder="e.g. 400001">
+                <label>PIN Code *</label>
+                <input type="text" id="pincode" class="form-input" required placeholder="e.g. 400001">
               </div>
             </div>
-            
-            <!-- Google Maps Embed for Address Verification (Mock) -->
             <div style="margin-top: 1.5rem;">
-              <label class="form-label">Pin your location on Google Maps</label>
+              <label class="form-label" style="color: var(--text-2); font-size: 0.85rem; margin-bottom: 0.4rem; display: block;">Pin your location on Google Maps</label>
               <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d241316.6433323616!2d72.7410975!3d19.0825223!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3be7c6306644edc1%3A0x5da4ed8f8d648c69!2sMumbai%2C%20Maharashtra!5e0!3m2!1sen!2sin!4v1683269389244!5m2!1sen!2sin" width="100%" height="200" style="border:0; border-radius: 8px;" allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade" title="Google Map Location"></iframe>
             </div>
           </div>
 
           <!-- Payment Method -->
-          <div class="card" style="padding:1.5rem">
-            <div class="section-title">💳 Payment Method</div>
-            <div class="payment-options">
+          <div class="checkout-section">
+            <h2>💳 Payment Method</h2>
+            <div class="payment-grid">
               
-              <div class="payment-opt selected" data-method="cod" onclick="selectPayment('cod')">
-                <div>
-                  <div class="payment-opt-title">Pay on Delivery (Cash/UPI)</div>
-                  <div class="payment-opt-desc">Pay at your doorstep. <span style="color:var(--success);font-weight:600;">Open Box Delivery Available 📦</span></div>
-                </div>
+              <div class="payment-card selected" onclick="selectPayment('cod', this)">
+                <div class="payment-title" style="color:#5c6fff">Pay on Delivery<br>(Cash/UPI)</div>
+                <div class="payment-subtitle">Pay at your doorstep.</div>
+                <div class="open-box-text">Open Box<br>Delivery Available<br>📦</div>
               </div>
-
-              <div class="payment-opt" data-method="upi" onclick="selectPayment('upi')">
-                <div>
-                  <div class="payment-opt-title">UPI (GPay, PhonePe, Paytm)</div>
-                  <div class="payment-opt-desc">Fast and secure payments via UPI apps.</div>
-                </div>
+              
+              <div class="payment-card" onclick="selectPayment('upi', this)">
+                <div class="payment-title" style="color:var(--text)">UPI (GPay, PhonePe,<br>Paytm)</div>
+                <div class="payment-subtitle">Fast and secure payments via UPI apps.</div>
               </div>
-
-              <div class="payment-opt" data-method="card" onclick="selectPayment('card')">
-                <div>
-                  <div class="payment-opt-title">Credit / Debit Card</div>
-                  <div class="payment-opt-desc">Visa, MasterCard, RuPay, Amex.</div>
-                </div>
+              
+              <div class="payment-card" onclick="selectPayment('card', this)">
+                <div class="payment-title" style="color:var(--text)">Credit / Debit Card</div>
+                <div class="payment-subtitle">Visa, MasterCard, RuPay, Amex.</div>
               </div>
-
+              
+            </div>
+            
+            <div id="upi-form" style="display:none; margin-top: 1.5rem; padding: 1.2rem; border: 1px solid var(--border); border-radius: 8px; background: var(--bg-surface);">
+               <label style="display:block; margin-bottom: 0.5rem; font-weight: 600; font-size: 0.9rem; color: var(--text);">Enter UPI ID</label>
+               <input type="text" placeholder="example@okhdfcbank" class="form-input" style="width: 100%; max-width: 300px;">
+               <div style="font-size: 0.8rem; color: var(--text-2); margin-top: 0.5rem;">A payment request will be sent to your UPI app.</div>
             </div>
 
-            <div id="card-fields" style="display:none; margin-top: 1rem;">
-              <div class="form-group">
-                <label class="form-label">Card Number</label>
-                <input type="text" class="form-input" placeholder="XXXX XXXX XXXX XXXX" maxlength="19"
-                  oninput="this.value=this.value.replace(/\D/g,'').replace(/(.{4})/g,'$1 ').trim()">
-              </div>
-              <div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem">
-                <div class="form-group">
-                  <label class="form-label">Expiry (MM/YY)</label>
-                  <input type="text" class="form-input" placeholder="MM/YY" maxlength="5">
-                </div>
-                <div class="form-group">
-                  <label class="form-label">CVV</label>
-                  <input type="text" class="form-input" placeholder="123" maxlength="3">
-                </div>
-              </div>
+            <div id="card-form" style="display:none; margin-top: 1.5rem; padding: 1.2rem; border: 1px solid var(--border); border-radius: 8px; background: var(--bg-surface);">
+               <label style="display:block; margin-bottom: 0.5rem; font-weight: 600; font-size: 0.9rem; color: var(--text);">Card Details</label>
+               <input type="text" placeholder="Card Number" class="form-input" style="width: 100%; margin-bottom: 0.8rem;">
+               <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+                  <input type="text" placeholder="MM/YY" class="form-input">
+                  <input type="text" placeholder="CVV" class="form-input">
+               </div>
             </div>
 
-            <div id="upi-fields" style="display:none; margin-top: 1rem;">
-              <div class="form-group">
-                <label class="form-label">Enter UPI ID</label>
-                <input type="text" class="form-input" placeholder="yournumber@upi">
-              </div>
-            </div>
+            <input type="hidden" id="payment_method" value="cod">
+          </div>
 
+        </div>
+
+        <!-- Right Column - Order Summary -->
+        <div class="right-col">
+          <!-- Coupons Box -->
+          <div class="summary-section">
+            <div class="summary-title">COUPONS</div>
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem;">
+              <div style="display: flex; align-items: center; gap: 0.5rem; font-weight: 700; color: var(--text);">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"></path><line x1="7" y1="7" x2="7.01" y2="7"></line></svg>
+                <span id="coupon-title">Apply Coupons</span>
+              </div>
+              <button class="badge-pink" id="coupon-btn" onclick="applyCoupon()" style="background: transparent;">APPLY</button>
+            </div>
+            <div style="font-size: 0.85rem; color: var(--text-2); margin-left: 1.8rem;" id="coupon-desc">
+              <span style="color: #ff3f6c; font-weight: 600;">Login</span> to get upto ₹500 OFF on first order
+            </div>
+          </div>
+
+          <!-- Donate Box -->
+          <div class="summary-section">
+             <div class="summary-title" style="color: var(--text-3); font-size: 0.75rem;">SUPPORT TRANSFORMATIVE SOCIAL WORK IN INDIA</div>
+             <div style="display: flex; align-items: center; gap: 0.5rem; font-weight: 600; color: var(--text); font-size: 0.9rem; margin-bottom: 1rem;">
+                <input type="checkbox" id="donate-checkbox" onchange="toggleDonationCheckbox(this)" style="width: 16px; height: 16px; accent-color: #ff3f6c;">
+                Donate and make a difference
+             </div>
+             <div style="display: flex; gap: 0.5rem; margin-bottom: 1rem; flex-wrap: wrap;">
+                <span class="donate-btn" data-amount="10" onclick="setDonation(10, this)" style="border: 1px solid var(--border); padding: 0.3rem 0.8rem; border-radius: 16px; font-size: 0.85rem; font-weight: 600; color: var(--text-2); cursor: pointer; transition: all 0.2s;">₹10</span>
+                <span class="donate-btn" data-amount="20" onclick="setDonation(20, this)" style="border: 1px solid var(--border); padding: 0.3rem 0.8rem; border-radius: 16px; font-size: 0.85rem; font-weight: 600; color: var(--text-2); cursor: pointer; transition: all 0.2s;">₹20</span>
+                <span class="donate-btn" data-amount="50" onclick="setDonation(50, this)" style="border: 1px solid var(--border); padding: 0.3rem 0.8rem; border-radius: 16px; font-size: 0.85rem; font-weight: 600; color: var(--text-2); cursor: pointer; transition: all 0.2s;">₹50</span>
+                <span class="donate-btn" data-amount="100" onclick="setDonation(100, this)" style="border: 1px solid var(--border); padding: 0.3rem 0.8rem; border-radius: 16px; font-size: 0.85rem; font-weight: 600; color: var(--text-2); cursor: pointer; transition: all 0.2s;">₹100</span>
+             </div>
+             <a href="javascript:void(0)" style="color: #ff3f6c; font-weight: 600; font-size: 0.85rem; text-decoration: none;">Know More</a>
+          </div>
+
+          <div class="summary-section" id="order-summary-box">
+            <div class="summary-title" id="price-details-title">PRICE DETAILS</div>
+            <div id="checkout-items" style="display:none;"></div>
+            
+            <div class="summary-row" style="margin-top: 1.5rem;">
+              <span>Total MRP</span>
+              <span id="c-total-mrp">₹0</span>
+            </div>
+            <div class="summary-row">
+              <span>Discount on MRP</span>
+              <span id="c-total-discount" style="color: #0ea5e9;">- ₹0</span>
+            </div>
+            <div class="summary-row">
+              <span>Coupon Discount</span>
+              <span id="c-coupon-discount" style="color: #ff3f6c; font-weight: 600; cursor: pointer;" onclick="applyCoupon()">Apply Coupon</span>
+            </div>
+            <div class="summary-row">
+              <span>Estimated GST (5%)</span>
+              <span id="c-gst">₹0</span>
+            </div>
+            <div class="summary-row">
+              <span>Delivery Fee</span>
+              <span id="c-delivery">FREE</span>
+            </div>
+            <div class="summary-row" style="border-bottom: 1px dashed var(--border); padding-bottom: 1.2rem;">
+              <span>Platform Fee</span>
+              <span id="c-platform-fee">₹20</span>
+            </div>
+            <div class="summary-row total">
+              <span>Total Amount</span>
+              <span id="c-final-total" style="color: #f768b4;">₹0</span>
+            </div>
+            
+            <div class="terms-text" style="text-align: left; margin-bottom: 1rem;">By placing the order, you agree to Myntra's <a href="#" style="color: #ff3f6c; font-weight: 600; text-decoration: none;">Terms of Use</a> and <a href="#" style="color: #ff3f6c; font-weight: 600; text-decoration: none;">Privacy Policy</a></div>
+            <button type="submit" class="place-order-btn" id="submit-btn">PLACE ORDER</button>
           </div>
         </div>
 
-        <!-- Right Column: Order Summary -->
-        <div>
-          <div class="summary-card" style="position: sticky; top: 20px;">
-            <h3 style="margin-bottom:1.2rem;font-size:1.2rem; border-bottom: 1px solid var(--border); padding-bottom: 0.5rem;">Order Summary</h3>
-            
-            <div id="checkout-items" class="loading">
-              <div class="dot"></div><div class="dot"></div><div class="dot"></div>
-            </div>
-            
-            <div id="checkout-summary" style="margin-top: 1rem;"></div>
-            
-            <hr style="border:0; border-top:1px solid var(--border); margin: 1.5rem 0;">
-            
-            <button class="btn btn-primary" id="place-order-btn"
-              onclick="placeOrder()" style="width:100%;justify-content:center; font-size: 1.1rem; padding: 1rem;">
-               Place Order
-            </button>
-            <p style="text-align: center; font-size: 0.8rem; color: var(--text-secondary); margin-top: 1rem;">
-              By placing the order, you agree to our Terms of Service.
-            </p>
-          </div>
-        </div>
+      </div>
+    </form>
+  </div>
+
+  <div class="loading" id="loading">
+    <div class="dot"></div><div class="dot"></div><div class="dot"></div>
+  </div>
+
+  <!-- Success State -->
+  <div class="success-wrapper" id="success-state" style="display:none; text-align:center; padding: 4rem 2rem; min-height: 100vh; align-items: center; justify-content: center;">
+    <div style="background: var(--bg-surface); padding: 3.5rem 2.5rem; border-radius: 20px; border: 1px solid var(--border); max-width: 480px; margin: 0 auto; box-shadow: 0 20px 40px rgba(0,0,0,0.4);">
+      <div style="font-size: 4rem; margin-bottom: 1rem; filter: drop-shadow(0 4px 6px rgba(0,0,0,0.2));">🎉</div>
+      <h2 style="font-size: 1.8rem; font-weight: 800; margin-bottom: 0.5rem; color: var(--text);">Order Placed Successfully!</h2>
+      <p style="color: var(--text-2); margin-bottom: 2rem; font-size: 1rem;">Thank you for shopping with ShopVerse.</p>
+      
+      <div style="background: var(--bg-raised); border-radius: 12px; padding: 1.5rem; margin-bottom: 2rem;">
+        <div style="color: var(--text); font-weight: 700; font-size: 1.1rem; margin-bottom: 0.5rem;" id="order-id-display">Order ID: #1</div>
+        <div style="color: #6a5fe8; font-weight: 800; font-size: 1.5rem;" id="order-total-display">₹0</div>
+        <div style="color: var(--text-2); font-weight: 600; font-size: 0.9rem; margin-top: 0.5rem;" id="order-payment-display">Payment: Cash on Delivery</div>
+      </div>
+      
+      <div style="color: #1ed760; font-weight: 600; font-size: 0.95rem; margin-bottom: 2rem;">
+        📦 Open Box Delivery Available at your doorstep.
+      </div>
+      
+      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+        <a href="/orders" style="display:flex; justify-content:center; align-items:center; background: linear-gradient(to right, #9b51e0, #f768b4); color: var(--text); text-decoration: none; border-radius: 8px; padding: 0.9rem; font-weight: 700; font-size: 0.95rem; transition: opacity 0.2s;">Track Order</a>
+        <a href="/" style="display:flex; justify-content:center; align-items:center; background: transparent; border: 1px solid #5c6fff; color: #5c6fff; text-decoration: none; border-radius: 8px; padding: 0.9rem; font-weight: 700; font-size: 0.95rem; transition: background 0.2s;">Continue Shopping</a>
       </div>
     </div>
   </div>
 
-  <script src="/js/main.js?v=11"></script>
+  <script src="/js/main.js?v=20"></script>
   <script>
-    let cartItems = [];
-    let selectedPayment = 'cod';
+    let checkoutItems = [];
+    let checkoutTotal = 0;
+    
+    let currentDonation = 0;
+    let couponDiscountAmount = 0;
+    let appliedCouponCode = '';
+    let globalTotalMRP = 0;
+    let globalTotalDiscount = 0;
 
-    function selectPayment(method) {
-      selectedPayment = method;
-      document.querySelectorAll('.payment-opt').forEach(el => {
-        el.classList.toggle('selected', el.dataset.method === method);
+    function applyCoupon() {
+      if (couponDiscountAmount > 0) {
+        if (confirm(`Remove applied coupon ${appliedCouponCode}?`)) {
+          couponDiscountAmount = 0;
+          appliedCouponCode = '';
+          renderCouponUI();
+          updateCheckoutTotals();
+        }
+        return;
+      }
+      
+      const code = prompt("Enter Coupon Code (Try: EORS300):");
+      if (!code) return;
+      
+      if (code.toUpperCase() === 'EORS300') {
+        couponDiscountAmount = 300;
+        appliedCouponCode = 'EORS300';
+        alert("Coupon EORS300 applied successfully! ₹300 OFF.");
+      } else {
+        couponDiscountAmount = 500;
+        appliedCouponCode = code.toUpperCase();
+        alert(`Coupon ${code.toUpperCase()} applied successfully! ₹500 OFF.`);
+      }
+      renderCouponUI();
+      updateCheckoutTotals();
+    }
+    
+    function renderCouponUI() {
+      const title = document.getElementById('coupon-title');
+      const btn = document.getElementById('coupon-btn');
+      const desc = document.getElementById('coupon-desc');
+      const cRow = document.getElementById('c-coupon-discount');
+      
+      if (couponDiscountAmount > 0) {
+        if (title) title.textContent = `1 Coupon Applied`;
+        if (btn) btn.textContent = 'REMOVE';
+        if (desc) desc.innerHTML = `You saved <span style="color: #1ed760; font-weight: 600;">₹${couponDiscountAmount}</span> with this coupon!`;
+        if (cRow) {
+          cRow.style.color = '#1ed760';
+          cRow.textContent = `- ₹${couponDiscountAmount}`;
+        }
+      } else {
+        if (title) title.textContent = 'Apply Coupons';
+        if (btn) btn.textContent = 'APPLY';
+        if (desc) desc.innerHTML = `<span style="color: #ff3f6c; font-weight: 600;">Login</span> to get upto ₹500 OFF on first order`;
+        if (cRow) {
+          cRow.style.color = '#ff3f6c';
+          cRow.textContent = 'Apply Coupon';
+        }
+      }
+    }
+    
+
+
+    function setDonation(amount) {
+      if (currentDonation === amount) {
+        currentDonation = 0;
+      } else {
+        currentDonation = amount;
+      }
+      renderDonationUI();
+      updateCheckoutTotals();
+    }
+    
+    function toggleDonationCheckbox(cb) {
+      if (!cb.checked) {
+        currentDonation = 0;
+      } else {
+        currentDonation = 10;
+      }
+      renderDonationUI();
+      updateCheckoutTotals();
+    }
+    
+    function renderDonationUI() {
+      document.querySelectorAll('.donate-btn').forEach(btn => {
+        const amt = parseInt(btn.getAttribute('data-amount'));
+        if (amt === currentDonation) {
+          btn.style.borderColor = '#ff3f6c';
+          btn.style.color = '#ff3f6c';
+          btn.style.background = 'rgba(255, 63, 108, 0.05)';
+        } else {
+          btn.style.borderColor = 'var(--border)';
+          btn.style.color = 'var(--text-2)';
+          btn.style.background = 'transparent';
+        }
       });
-      document.getElementById('card-fields').style.display = method === 'card' ? 'block' : 'none';
-      document.getElementById('upi-fields').style.display = method === 'upi' ? 'block' : 'none';
+      document.getElementById('donate-checkbox').checked = (currentDonation > 0);
+    }
+    
+    function updateCheckoutTotals() {
+        const platformFee = 20;
+        const discountedPrice = globalTotalMRP - globalTotalDiscount;
+        const gstAmount = Math.round(discountedPrice * 0.05);
+        const deliveryFee = discountedPrice < 999 && discountedPrice > 0 ? 40 : 0;
+        
+        checkoutTotal = Math.max(0, discountedPrice + platformFee + gstAmount + deliveryFee + currentDonation - couponDiscountAmount);
+
+        document.getElementById('c-total-mrp').textContent = `₹${globalTotalMRP.toLocaleString('en-IN')}`;
+        document.getElementById('c-total-discount').textContent = `- ₹${globalTotalDiscount.toLocaleString('en-IN')}`;
+        document.getElementById('c-gst').textContent = `₹${gstAmount.toLocaleString('en-IN')}`;
+        
+        const deliveryEl = document.getElementById('c-delivery');
+        if (deliveryFee === 0) {
+            deliveryEl.textContent = 'FREE';
+            deliveryEl.style.color = '#1ed760';
+            deliveryEl.style.fontWeight = '700';
+        } else {
+            deliveryEl.textContent = `₹${deliveryFee}`;
+            deliveryEl.style.color = 'var(--text)';
+            deliveryEl.style.fontWeight = 'normal';
+        }
+        
+        document.getElementById('c-platform-fee').textContent = `₹${platformFee}`;
+        
+        let dRow = document.getElementById('c-donation-row');
+        if (currentDonation > 0) {
+            if (!dRow) {
+                const pFeeRow = document.getElementById('c-platform-fee').parentElement;
+                dRow = document.createElement('div');
+                dRow.className = 'summary-row';
+                dRow.id = 'c-donation-row';
+                dRow.style.color = 'var(--text)';
+                pFeeRow.parentNode.insertBefore(dRow, pFeeRow.nextSibling);
+            }
+            dRow.innerHTML = `<span>Support Us</span><span>₹${currentDonation}</span>`;
+        } else if (dRow) {
+            dRow.remove();
+        }
+
+        document.getElementById('c-final-total').textContent = `₹${checkoutTotal.toLocaleString('en-IN')}`;
     }
 
-    async function loadCartSummary() {
+    async function loadCheckout() {
       document.getElementById('navbar-root').innerHTML = renderNavbar();
       updateNavAuth();
+      updateCartCount();
 
-      const res = await fetch(`${API}/cart?session_id=${getSessionId()}`, { headers: getHeaders() });
-      cartItems = await res.json();
-
-      if (cartItems.length === 0) {
-        window.location = '/cart';
-        return;
-      }
-
+      if (!isLoggedIn()) { window.location = '/login?redirect=/checkout'; return; }
+      
       const user = getUser();
-      if (user) {
-        document.getElementById('del-name').value = user.name;
-        document.getElementById('del-email').value = user.email;
-      }
+      if (user && user.name) document.getElementById('name').value = user.name;
+      if (user && user.email) document.getElementById('email').value = user.email;
 
-      const total = cartItems.reduce((s, i) => s + i.price * i.quantity, 0);
+      try {
+        const cartRes = await fetch(`${API}/cart?session_id=${getSessionId()}`, { headers: getHeaders() });
+        const cartData = await cartRes.json();
+        
+        if (!Array.isArray(cartData) || cartData.length === 0) {
+          window.location = '/cart';
+          return;
+        }
 
-      // Render items with images and details
-      document.getElementById('checkout-items').outerHTML = `
-        <div id="checkout-items" style="max-height: 300px; overflow-y: auto;">
-          ${cartItems.map(item => `
-            <div class="checkout-item-card">
-              <img src="${item.image}" alt="${item.name}" onerror="this.src='https://via.placeholder.com/70'">
-              <div class="checkout-item-details">
-                <div style="font-weight: 600; font-size: 0.95rem; line-height: 1.2; margin-bottom: 0.3rem;">${item.name}</div>
-                <div style="display: flex; justify-content: space-between; align-items: center;">
-                  <div style="color: var(--text-secondary); font-size: 0.85rem;">Qty: ${item.quantity}</div>
-                  <button onclick="removeItemFromCheckout(${item.id})" style="background:none; border:none; color: #ff4757; cursor:pointer; display:flex; align-items:center; gap:0.2rem; font-size: 0.85rem;">
-                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path><line x1="10" y1="11" x2="10" y2="17"></line><line x1="14" y1="11" x2="14" y2="17"></line></svg>
-                    Remove
-                  </button>
-                </div>
-                <div style="color: var(--accent); font-weight: 700; font-size: 1rem; margin-top: 0.3rem;">${formatPrice(item.price)}</div>
+        const prodRes = await fetch(`${API}/products`);
+        const products = await prodRes.json();
+
+        checkoutItems = cartData.map(item => {
+          const p = products.find(x => x.id === item.product_id);
+          return { ...p, quantity: item.quantity, cart_item_id: item.id };
+        }).filter(x => x.name);
+
+        globalTotalMRP = 0;
+        globalTotalDiscount = 0;
+
+        document.getElementById('loading').style.display = 'none';
+        document.getElementById('checkout-wrapper').style.display = 'block';
+
+        document.getElementById('checkout-items').innerHTML = checkoutItems.map(item => {
+          const itemMrp = item.original_price ? item.original_price : item.price + 500;
+          const itemDiscount = itemMrp - item.price;
+          globalTotalMRP += itemMrp * item.quantity;
+          globalTotalDiscount += itemDiscount * item.quantity;
+
+          return `
+          <div class="summary-item">
+            <img src="${item.image}" class="summary-item-img">
+            <div class="summary-item-details">
+              <div class="summary-item-name">${item.name}</div>
+              <div class="summary-item-meta">
+                <span>Qty: ${item.quantity}</span>
+                <a href="javascript:void(0)" class="summary-item-remove" onclick="removeItem(${item.cart_item_id})">🗑 Remove</a>
               </div>
+              <div class="summary-item-price">${formatPrice(item.price * item.quantity)} <span style="text-decoration: line-through; color: var(--text-3); font-size: 0.8rem; margin-left: 0.3rem;">₹${(itemMrp * item.quantity).toLocaleString('en-IN')}</span></div>
             </div>
-          `).join('')}
-        </div>
-      `;
+          </div>
+        `}).join('');
 
-      document.getElementById('checkout-summary').innerHTML = `
-        <div class="summary-row" style="margin-bottom: 0.5rem;">
-          <span style="color: var(--text-secondary);">Items Total</span>
-          <span>${formatPrice(total)}</span>
-        </div>
-        <div class="summary-row" style="margin-bottom: 0.5rem;">
-          <span style="color: var(--text-secondary);">Delivery Charges</span>
-          <span style="color:var(--success); font-weight: bold;">FREE</span>
-        </div>
-        <div class="summary-row total" style="margin-top: 1rem; border-top: 1px dashed var(--border); padding-top: 1rem;">
-          <span style="font-size: 1.2rem;">Order Total</span>
-          <span style="font-size: 1.4rem; color: var(--accent);">${formatPrice(total)}</span>
-        </div>
-      `;
+        updateCheckoutTotals();
+        
+        document.getElementById('price-details-title').textContent = `PRICE DETAILS (${checkoutItems.length} Item${checkoutItems.length !== 1 ? 's' : ''})`;
+
+      } catch (e) {
+        showToast('Error loading checkout', 'error');
+        document.getElementById('loading').innerHTML = '<p style="color:red">Failed to load checkout details.</p>';
+      }
     }
 
-    async function placeOrder() {
-      const name = document.getElementById('del-name').value.trim();
-      const email = document.getElementById('del-email').value.trim();
-      const address = document.getElementById('del-address').value.trim();
-      const city = document.getElementById('del-city').value.trim();
-
-      if (!name || !email || !address || !city) {
-        showToast('Please fill all delivery details', 'error');
-        return;
+    async function removeItem(id) {
+      try {
+        await fetch(`${API}/cart/remove/${id}`, { method: 'DELETE', headers: getHeaders() });
+        showToast('Item removed', 'info');
+        loadCheckout(); // Reload checkout to reflect changes
+      } catch (e) {
+        showToast('Error removing item', 'error');
       }
+    }
 
-      const btn = document.getElementById('place-order-btn');
+    function selectPayment(method, el) {
+      document.querySelectorAll('.payment-card').forEach(e => {
+        e.classList.remove('selected');
+        const title = e.querySelector('.payment-title');
+        if (title) title.style.color = 'var(--text)';
+      });
+      el.classList.add('selected');
+      const selectedTitle = el.querySelector('.payment-title');
+      if (selectedTitle) selectedTitle.style.color = '#5c6fff';
+      
+      document.getElementById('payment_method').value = method;
+      
+      document.getElementById('upi-form').style.display = (method === 'upi') ? 'block' : 'none';
+      document.getElementById('card-form').style.display = (method === 'card') ? 'block' : 'none';
+    }
+
+    async function handleCheckout(e) {
+      e.preventDefault();
+      const btn = document.getElementById('submit-btn');
       btn.disabled = true;
-      btn.textContent = '⏳ Processing Order...';
+      btn.innerHTML = 'Processing...';
+
+      const payload = {
+        name: document.getElementById('name').value,
+        email: document.getElementById('email').value,
+        address: document.getElementById('address').value,
+        city: document.getElementById('city').value,
+        pincode: document.getElementById('pincode').value,
+        payment_method: document.getElementById('payment_method').value,
+        total: checkoutTotal,
+        items: checkoutItems.map(item => ({ product_id: item.id, quantity: item.quantity })),
+        session_id: getSessionId()
+      };
 
       try {
         const res = await fetch(`${API}/orders`, {
           method: 'POST',
-          headers: getHeaders(),
-          body: JSON.stringify({
-            name, email, address, city,
-            payment_method: selectedPayment,
-            session_id: getSessionId(),
-            items: cartItems.map(i => ({ product_id: i.product_id, quantity: i.quantity }))
-          })
+          headers: { ...getHeaders(), 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload)
         });
-
         const data = await res.json();
+        
         if (data.success) {
-          document.getElementById('checkout-main').style.display = 'none';
-          document.getElementById('order-success').style.display = 'block';
-          document.getElementById('order-id-text').textContent = `Order ID: #${data.orderId}`;
-          document.getElementById('order-total-text').textContent = formatPrice(data.total);
-          updateCartCount(); // refresh cart count to 0
+          // Clear cart on backend via mock endpoint
+          await fetch(`${API}/cart/clear?session_id=${getSessionId()}`, { method: 'DELETE', headers: getHeaders() }).catch(()=>{});
+          
+          document.getElementById('checkout-wrapper').style.display = 'none';
+          document.getElementById('success-state').style.display = 'flex';
+          document.getElementById('order-id-display').textContent = `Order ID: #${data.orderId}`;
+          document.getElementById('order-total-display').textContent = `₹${data.total.toLocaleString('en-IN')}`;
+          
+          let paymentText = 'Cash on Delivery';
+          if (payload.payment_method === 'upi') paymentText = 'Paid via UPI';
+          if (payload.payment_method === 'card') paymentText = 'Paid via Credit/Debit Card';
+          document.getElementById('order-payment-display').textContent = `Payment: ${paymentText}`;
+          
+          updateCartCount(); // will be 0
+          window.scrollTo(0,0);
         } else {
-          showToast(data.error || 'Order failed', 'error');
+          showToast(data.error || 'Failed to place order', 'error');
           btn.disabled = false;
           btn.textContent = 'Place Order';
         }
-      } catch {
-        showToast('Something went wrong', 'error');
+      } catch (err) {
+        showToast('Network error during checkout', 'error');
         btn.disabled = false;
         btn.textContent = 'Place Order';
       }
     }
 
-    async function removeItemFromCheckout(id) {
-      if (!confirm('Remove this item from your order?')) return;
-      try {
-        const res = await fetch(`${API}/cart/remove/${id}`, { method: 'DELETE', headers: getHeaders() });
-        if (res.ok) {
-          showToast('Item removed');
-          updateCartCount();
-          // To re-render, we can just reload the page or call loadCartSummary()
-          // But since outerHTML replaces the element, calling loadCartSummary might need outerHTML fix or just reload
-          window.location.reload();
-        }
-      } catch (e) {
-        showToast('Failed to remove item', 'error');
-      }
-    }
-
-    document.addEventListener('DOMContentLoaded', loadCartSummary);
+    document.addEventListener('DOMContentLoaded', loadCheckout);
   </script>
 </body>
 </html>

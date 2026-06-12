@@ -5,17 +5,85 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Shopping Cart — ShopVerse</title>
   <link rel="icon" type="image/svg+xml" href="/favicon.svg">
-  <link rel="stylesheet" href="/css/style.css">
+  <link rel="stylesheet" href="/css/style.css?v=43">
+  <style>
+    /* Custom Styling for Order Summary matching Screenshot */
+    .summary-card {
+      background: var(--bg-surface);
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      padding: 1.5rem;
+      margin-bottom: 1rem;
+    }
+    .summary-title {
+      color: var(--text-2);
+      font-size: 0.85rem;
+      font-weight: 700;
+      letter-spacing: 0.5px;
+      margin-bottom: 1rem;
+    }
+    .summary-row {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 0.8rem;
+      color: var(--text);
+      font-size: 0.95rem;
+    }
+    .summary-row.total {
+      margin-top: 1rem;
+      padding-top: 1rem;
+      border-top: 1px solid var(--border);
+      color: var(--text);
+      font-size: 1.1rem;
+      font-weight: 800;
+    }
+    .summary-btn-primary {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      width: 100%;
+      background: #ff3f6c; /* Myntra pink */
+      color: #fff;
+      padding: 0.8rem;
+      border-radius: 4px;
+      font-weight: 700;
+      font-size: 0.95rem;
+      margin-top: 1rem;
+      text-decoration: none;
+      border: none;
+      cursor: pointer;
+    }
+    .summary-btn-primary:hover {
+      background: #ed3863;
+    }
+    .badge-pink {
+      color: #ff3f6c;
+      border: 1px solid #ff3f6c;
+      padding: 0.2rem 0.6rem;
+      border-radius: 4px;
+      font-size: 0.8rem;
+      font-weight: 600;
+      cursor: pointer;
+    }
+    .cart-layout {
+      display: grid;
+      grid-template-columns: 2fr 1fr;
+      gap: 2rem;
+    }
+    @media (max-width: 768px) {
+      .cart-layout { grid-template-columns: 1fr; }
+    }
+  </style>
 </head>
 <body>
   <div id="navbar-root"></div>
-  <div class="page-header container">
-    <div style="margin-bottom: 1rem;"><a href="/" class="btn btn-outline btn-sm">&larr; Continue Shopping</a></div>
+  <div class="page-header container" style="padding-top: 2rem;">
+    <div style="margin-bottom: 1rem;"><a href="/" class="summary-btn-outline" style="display:inline-block; width:auto; padding:0.5rem 1rem;">&larr; Continue Shopping</a></div>
     <h1 class="page-title"> Shopping Cart</h1>
     <p class="page-subtitle" id="cart-subtitle">Loading your cart...</p>
   </div>
 
-  <div class="container">
+  <div class="container" style="padding-bottom: 4rem;">
     <div class="loading" id="loading">
       <div class="dot"></div><div class="dot"></div><div class="dot"></div>
     </div>
@@ -23,43 +91,183 @@
     <div id="cart-content" style="display:none">
       <div class="cart-layout">
         <div>
-          <div class="card" id="cart-items-container"></div>
+          <!-- Delivery Checker -->
+          <div style="display: flex; justify-content: space-between; align-items: center; padding: 1.2rem; background: var(--bg-surface); border: 1px solid var(--border); border-radius: 4px; margin-bottom: 1rem;">
+            <div style="font-weight: 600; font-size: 0.95rem; color: var(--text);">Check delivery time & services</div>
+            <button class="badge-pink" style="background: transparent;">ENTER PIN CODE</button>
+          </div>
+          
+          <div class="card" style="background: var(--bg-surface); border: 1px solid var(--border); border-radius: 4px; margin-bottom: 1rem;">
+            <!-- Cart Header -->
+            <div style="display: flex; justify-content: space-between; align-items: center; padding: 1rem 1.5rem; border-bottom: 1px solid var(--border); font-weight: 700; font-size: 0.95rem;">
+              <div style="display: flex; align-items: center; gap: 0.5rem;">
+                <input type="checkbox" checked style="accent-color: #ff3f6c; width: 16px; height: 16px; margin: 0;">
+                <span id="items-selected-count" style="color: var(--text);">1/1 ITEMS SELECTED</span>
+              </div>
+              <div style="display: flex; gap: 1rem; font-size: 0.85rem; color: var(--text-2); font-weight: 600;">
+                <span style="cursor: pointer; letter-spacing: 0.5px;">REMOVE</span>
+                <span style="border-left: 1px solid var(--border); padding-left: 1rem; cursor: pointer; letter-spacing: 0.5px;">MOVE TO WISHLIST</span>
+              </div>
+            </div>
+            <!-- Items Container -->
+            <div id="cart-items-container"></div>
+          </div>
+
+          <!-- Login banner -->
+          <div style="display: flex; justify-content: space-between; align-items: center; padding: 1.2rem; background: var(--bg-surface); border: 1px solid var(--border); border-radius: 4px; flex-wrap: wrap; gap: 1rem;">
+            <div style="display: flex; align-items: center; gap: 1rem;">
+              <div style="display: flex;">
+                 <div style="width: 30px; height: 30px; background: #ddd; border-radius: 50%; border: 2px solid var(--bg-surface); z-index: 3; display: flex; justify-content: center; align-items: center; font-size: 0.8rem;">👩</div>
+                 <div style="width: 30px; height: 30px; background: #ccc; border-radius: 50%; border: 2px solid var(--bg-surface); margin-left: -10px; z-index: 2; display: flex; justify-content: center; align-items: center; font-size: 0.8rem;">👨</div>
+              </div>
+              <span style="font-weight: 600; font-size: 0.95rem; color: var(--text);">Login to see items from your existing bag and wishlist.</span>
+            </div>
+            <a href="/login" style="color: #ff3f6c; font-weight: 700; font-size: 0.9rem; text-decoration: none;">LOGIN NOW</a>
+          </div>
         </div>
         <div>
+          <!-- Coupons Box -->
+          <div class="summary-card">
+            <div class="summary-title">COUPONS</div>
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem;">
+              <div style="display: flex; align-items: center; gap: 0.5rem; font-weight: 700; color: var(--text);">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"></path><line x1="7" y1="7" x2="7.01" y2="7"></line></svg>
+                <span id="coupon-title">Apply Coupons</span>
+              </div>
+              <button class="badge-pink" id="coupon-btn" onclick="applyCoupon()" style="background: transparent;">APPLY</button>
+            </div>
+            <div style="font-size: 0.85rem; color: var(--text-2); margin-left: 1.8rem;" id="coupon-desc">
+              <span style="color: #ff3f6c; font-weight: 600;">Login</span> to get upto ₹500 OFF on first order
+            </div>
+          </div>
+
+          <!-- Donate Box -->
+          <div class="summary-card">
+             <div class="summary-title" style="color: var(--text-3); font-size: 0.75rem;">SUPPORT TRANSFORMATIVE SOCIAL WORK IN INDIA</div>
+             <div style="display: flex; align-items: center; gap: 0.5rem; font-weight: 600; color: var(--text); font-size: 0.9rem; margin-bottom: 1rem;">
+                <input type="checkbox" id="donate-checkbox" onchange="toggleDonationCheckbox(this)" style="width: 16px; height: 16px; accent-color: #ff3f6c;">
+                Donate and make a difference
+             </div>
+             <div style="display: flex; gap: 0.5rem; margin-bottom: 1rem; flex-wrap: wrap;">
+                <span class="donate-btn" data-amount="10" onclick="setDonation(10, this)" style="border: 1px solid var(--border); padding: 0.3rem 0.8rem; border-radius: 16px; font-size: 0.85rem; font-weight: 600; color: var(--text-2); cursor: pointer; transition: all 0.2s;">₹10</span>
+                <span class="donate-btn" data-amount="20" onclick="setDonation(20, this)" style="border: 1px solid var(--border); padding: 0.3rem 0.8rem; border-radius: 16px; font-size: 0.85rem; font-weight: 600; color: var(--text-2); cursor: pointer; transition: all 0.2s;">₹20</span>
+                <span class="donate-btn" data-amount="50" onclick="setDonation(50, this)" style="border: 1px solid var(--border); padding: 0.3rem 0.8rem; border-radius: 16px; font-size: 0.85rem; font-weight: 600; color: var(--text-2); cursor: pointer; transition: all 0.2s;">₹50</span>
+                <span class="donate-btn" data-amount="100" onclick="setDonation(100, this)" style="border: 1px solid var(--border); padding: 0.3rem 0.8rem; border-radius: 16px; font-size: 0.85rem; font-weight: 600; color: var(--text-2); cursor: pointer; transition: all 0.2s;">₹100</span>
+             </div>
+             <a href="javascript:void(0)" style="color: #ff3f6c; font-weight: 600; font-size: 0.85rem; text-decoration: none;">Know More</a>
+          </div>
+
+          <!-- Price Details Box -->
           <div class="summary-card" id="order-summary">
-            <h3 style="margin-bottom:1.2rem;font-size:1.1rem">Order Summary</h3>
+            <div class="summary-title" id="price-details-title">PRICE DETAILS (0 Items)</div>
             <div id="summary-items"></div>
+            
             <div class="summary-row total">
-              <span>Total</span>
+              <span>Total Amount</span>
               <span id="total-price">₹0</span>
             </div>
-            <div style="margin-top:0.5rem;font-size:0.8rem;color:var(--text-secondary);text-align:center;padding:0.5rem">
-               Free delivery on all orders
-            </div>
-            <a href="/checkout" class="btn btn-primary" id="checkout-btn" 
-              style="width:100%;justify-content:center;margin-top:1rem">
-              Proceed to Checkout →
-            </a>
-            <a href="/" class="btn btn-outline" 
-              style="width:100%;justify-content:center;margin-top:0.8rem">
-              Continue Shopping
+            
+            <a href="/checkout" class="summary-btn-primary" id="checkout-btn">
+              PLACE ORDER
             </a>
           </div>
         </div>
       </div>
     </div>
 
-    <div id="empty-cart" style="display:none" class="empty-state">
-      <div class="empty-icon"></div>
-      <div class="empty-title">Your cart is empty</div>
-      <div class="empty-text">Add some amazing products to get started!</div>
-      <a href="/" class="btn btn-primary">Start Shopping</a>
+    <div id="empty-cart" style="display:none; text-align:center; padding: 4rem 2rem;" class="empty-state">
+      <div class="empty-icon" style="font-size: 4rem; margin-bottom: 1rem;">🛒</div>
+      <div class="empty-title" style="font-size: 1.5rem; font-weight: 800; color: var(--text); margin-bottom: 0.5rem;">Your cart is empty</div>
+      <div class="empty-text" style="color: var(--text-2); margin-bottom: 2rem;">Add some amazing products to get started!</div>
+      <a href="/" class="summary-btn-primary" style="display:inline-block; width:auto; padding:0.8rem 2rem;">Start Shopping</a>
     </div>
   </div>
 
-  <script src="/js/main.js?v=2"></script>
+  <script src="/js/main.js?v=20"></script>
   <script>
     let cartItems = [];
+    let currentDonation = 0;
+    let couponDiscountAmount = 0;
+    let appliedCouponCode = '';
+
+    function applyCoupon() {
+      if (couponDiscountAmount > 0) {
+        if (confirm(`Remove applied coupon ${appliedCouponCode}?`)) {
+          couponDiscountAmount = 0;
+          appliedCouponCode = '';
+          renderCouponUI();
+          renderCart();
+        }
+        return;
+      }
+      
+      const code = prompt("Enter Coupon Code (Try: EORS300):");
+      if (!code) return;
+      
+      if (code.toUpperCase() === 'EORS300') {
+        couponDiscountAmount = 300;
+        appliedCouponCode = 'EORS300';
+        alert("Coupon EORS300 applied successfully! ₹300 OFF.");
+      } else {
+        couponDiscountAmount = 500;
+        appliedCouponCode = code.toUpperCase();
+        alert(`Coupon ${code.toUpperCase()} applied successfully! ₹500 OFF.`);
+      }
+      renderCouponUI();
+      renderCart();
+    }
+    
+    function renderCouponUI() {
+      const title = document.getElementById('coupon-title');
+      const btn = document.getElementById('coupon-btn');
+      const desc = document.getElementById('coupon-desc');
+      
+      if (couponDiscountAmount > 0) {
+        if (title) title.textContent = `1 Coupon Applied`;
+        if (btn) btn.textContent = 'REMOVE';
+        if (desc) desc.innerHTML = `You saved <span style="color: #1ed760; font-weight: 600;">₹${couponDiscountAmount}</span> with this coupon!`;
+      } else {
+        if (title) title.textContent = 'Apply Coupons';
+        if (btn) btn.textContent = 'APPLY';
+        if (desc) desc.innerHTML = `<span style="color: #ff3f6c; font-weight: 600;">Login</span> to get upto ₹500 OFF on first order`;
+      }
+    }
+
+    function setDonation(amount) {
+      if (currentDonation === amount) {
+        currentDonation = 0;
+      } else {
+        currentDonation = amount;
+      }
+      renderDonationUI();
+      renderCart();
+    }
+    
+    function toggleDonationCheckbox(cb) {
+      if (!cb.checked) {
+        currentDonation = 0;
+      } else {
+        currentDonation = 10;
+      }
+      renderDonationUI();
+      renderCart();
+    }
+    
+    function renderDonationUI() {
+      document.querySelectorAll('.donate-btn').forEach(btn => {
+        const amt = parseInt(btn.getAttribute('data-amount'));
+        if (amt === currentDonation) {
+          btn.style.borderColor = '#ff3f6c';
+          btn.style.color = '#ff3f6c';
+          btn.style.background = 'rgba(255, 63, 108, 0.05)';
+        } else {
+          btn.style.borderColor = 'var(--border)';
+          btn.style.color = 'var(--text-2)';
+          btn.style.background = 'transparent';
+        }
+      });
+      document.getElementById('donate-checkbox').checked = (currentDonation > 0);
+    }
 
     async function loadCart() {
       document.getElementById('navbar-root').innerHTML = renderNavbar();
@@ -70,6 +278,16 @@
           headers: getHeaders()
         });
         cartItems = await res.json();
+        
+        // Populate product info if missing from cart API
+        const prodRes = await fetch(`${API}/products`);
+        const products = await prodRes.json();
+        
+        cartItems = cartItems.map(item => {
+          const p = products.find(x => x.id === item.product_id);
+          return { ...p, quantity: item.quantity, cart_item_id: item.id };
+        }).filter(x => x.name);
+
         renderCart();
       } catch {
         showToast('Failed to load cart', 'error');
@@ -94,57 +312,120 @@
       document.getElementById('total-price').textContent = formatPrice(total);
 
       // Update cart count badge
-      document.querySelectorAll('.cart-count').forEach(el => {
-        el.textContent = totalItems;
-        el.style.display = totalItems > 0 ? 'flex' : 'none';
-      });
+      updateCartCount();
 
-      document.getElementById('cart-items-container').innerHTML = cartItems.map(item => `
-        <div class="cart-item" id="item-${item.id}">
-          <img src="${item.image}" alt="${item.name}" class="cart-item-img"
-            onerror="this.src='https://via.placeholder.com/80x80/1e1e2a/6c63ff?text=P'">
-          <div class="cart-item-info">
-            <div class="cart-item-name">${item.name}</div>
-            <div class="cart-item-price">${formatPrice(item.price)}</div>
-            <div class="quantity-control">
-              <button class="qty-btn" onclick="updateQty(${item.id}, ${item.quantity - 1})">−</button>
-              <span class="qty-display">${item.quantity}</span>
-              <button class="qty-btn" onclick="updateQty(${item.id}, ${item.quantity + 1})">+</button>
+      document.getElementById('items-selected-count').textContent = `${totalItems}/${totalItems} ITEMS SELECTED`;
+      document.getElementById('price-details-title').textContent = `PRICE DETAILS (${totalItems} Item${totalItems !== 1 ? 's' : ''})`;
+
+      let totalMRP = 0;
+      let totalDiscount = 0;
+
+      document.getElementById('cart-items-container').innerHTML = cartItems.map(item => {
+        const itemMrp = item.original_price ? item.original_price : item.price + 500;
+        const itemDiscount = itemMrp - item.price;
+        totalMRP += itemMrp * item.quantity;
+        totalDiscount += itemDiscount * item.quantity;
+        
+        return `
+        <div class="cart-item" id="item-${item.cart_item_id}" style="padding: 1rem 1.5rem; border-bottom: 1px solid var(--border); display: flex; gap: 1rem; position: relative;">
+          <div style="position: absolute; top: 1rem; right: 1.5rem; cursor: pointer; font-size: 1.2rem; color: var(--text-2);" onclick="removeItem(${item.cart_item_id})">✕</div>
+          
+          <img src="${item.image}" alt="${item.name}" style="width: 110px; height: 140px; object-fit: cover; border-radius: 4px;">
+          <div class="cart-item-info" style="flex: 1;">
+            <div style="font-weight: 700; font-size: 1rem; color: var(--text); margin-bottom: 0.2rem;">${item.brand || 'ShopVerse Premium'}</div>
+            <div style="color: var(--text-2); font-size: 0.95rem; margin-bottom: 0.3rem;">${item.name}</div>
+            <div style="color: var(--text-3); font-size: 0.8rem; margin-bottom: 0.8rem;">Sold by: ${item.sold_by || 'Verified Seller'}</div>
+            
+            <div style="display: flex; gap: 0.5rem; margin-bottom: 0.8rem;">
+               <div style="background: var(--bg-base); padding: 0.2rem 0.5rem; border-radius: 4px; font-size: 0.85rem; font-weight: 600; cursor: pointer; display: flex; align-items: center; gap: 0.3rem;">Size: 5 <span style="font-size: 0.6rem;">▼</span></div>
+               <div style="background: var(--bg-base); padding: 0.2rem 0.5rem; border-radius: 4px; font-size: 0.85rem; font-weight: 600; cursor: pointer; display: flex; align-items: center; gap: 0.3rem;">Qty: ${item.quantity} <span style="font-size: 0.6rem;">▼</span></div>
+            </div>
+            
+            <div style="display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.5rem;">
+               <span style="font-weight: 700; color: var(--text); font-size: 0.95rem;">₹${(item.price * item.quantity).toLocaleString('en-IN')}</span>
+               <span style="color: var(--text-3); text-decoration: line-through; font-size: 0.85rem;">₹${(itemMrp * item.quantity).toLocaleString('en-IN')}</span>
+               <span style="color: #0ea5e9; font-weight: 600; font-size: 0.85rem;">${Math.round((itemDiscount/itemMrp)*100)}% OFF</span>
+            </div>
+            <div style="font-size: 0.8rem; color: var(--text-2);">
+               <span style="margin-right: 0.2rem;">🔄</span> <strong style="color: var(--text);">14 days</strong> return available
             </div>
           </div>
-          <div style="text-align:right">
-            <div style="font-weight:700;font-size:1rem;margin-bottom:0.8rem">${formatPrice(item.price * item.quantity)}</div>
-            <button class="btn btn-danger btn-sm" onclick="removeItem(${item.id})">️ Remove</button>
-          </div>
         </div>
-      `).join('');
+      `}).join('');
 
-      document.getElementById('summary-items').innerHTML = cartItems.map(item => `
+      const platformFee = 20;
+      const discountedPrice = totalMRP - totalDiscount;
+      const gstAmount = Math.round(discountedPrice * 0.05);
+      const deliveryFee = discountedPrice < 999 && discountedPrice > 0 ? 40 : 0;
+      
+      let donationHtml = '';
+      if (currentDonation > 0) {
+        donationHtml = `
+          <div class="summary-row" style="color: var(--text);">
+            <span>Support Us</span>
+            <span>₹${currentDonation}</span>
+          </div>
+        `;
+      }
+      
+      document.getElementById('summary-items').innerHTML = `
         <div class="summary-row">
-          <span style="max-width:180px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${item.name} ×${item.quantity}</span>
-          <span>${formatPrice(item.price * item.quantity)}</span>
+          <span>Total MRP</span>
+          <span>₹${totalMRP.toLocaleString('en-IN')}</span>
         </div>
-      `).join('') + `
-        <div class="summary-row"><span>Delivery</span><span style="color:var(--success)">FREE</span></div>
+        <div class="summary-row">
+          <span>Discount on MRP</span>
+          <span style="color: #0ea5e9;">- ₹${totalDiscount.toLocaleString('en-IN')}</span>
+        </div>
+        <div class="summary-row">
+          <span>Coupon Discount</span>
+          <span style="color: ${couponDiscountAmount > 0 ? '#1ed760' : '#ff3f6c'}; cursor: pointer; font-weight: 600;" onclick="applyCoupon()">
+            ${couponDiscountAmount > 0 ? `- ₹${couponDiscountAmount}` : 'Apply Coupon'}
+          </span>
+        </div>
+        <div class="summary-row">
+          <span>Estimated GST (5%)</span>
+          <span>₹${gstAmount.toLocaleString('en-IN')}</span>
+        </div>
+        <div class="summary-row">
+          <span>Delivery Fee</span>
+          <span style="color: ${deliveryFee === 0 ? '#1ed760' : 'var(--text)'}; font-weight: ${deliveryFee === 0 ? '700' : 'normal'};">${deliveryFee === 0 ? 'FREE' : '₹40'}</span>
+        </div>
+        <div class="summary-row">
+          <span>Platform Fee <span style="color: #ff3f6c; font-size: 0.8rem; cursor: pointer; font-weight: 600;">Know More</span></span>
+          <span>₹${platformFee}</span>
+        </div>
+        ${donationHtml}
       `;
+      
+      const finalTotal = Math.max(0, discountedPrice + platformFee + gstAmount + deliveryFee + currentDonation - couponDiscountAmount);
+      document.getElementById('total-price').innerHTML = `₹${finalTotal.toLocaleString('en-IN')}`;
     }
 
     async function updateQty(id, newQty) {
-      await fetch(`${API}/cart/update/${id}`, {
-        method: 'PUT',
-        headers: getHeaders(),
-        body: JSON.stringify({ quantity: newQty })
-      });
-      await loadCart();
+      if (newQty <= 0) return removeItem(id);
+      try {
+        await fetch(`${API}/cart/update/${id}`, {
+          method: 'PUT',
+          headers: getHeaders(),
+          body: JSON.stringify({ quantity: newQty })
+        });
+        await loadCart();
+      } catch (e) { showToast('Error updating quantity', 'error'); }
     }
 
     async function removeItem(id) {
-      await fetch(`${API}/cart/remove/${id}`, { method: 'DELETE', headers: getHeaders() });
-      await loadCart();
-      showToast('Item removed', 'info');
+      try {
+        await fetch(`${API}/cart/remove/${id}`, {
+          method: 'DELETE',
+          headers: getHeaders()
+        });
+        await loadCart();
+        showToast('Item removed', 'info');
+      } catch (e) { showToast('Error removing item', 'error'); }
     }
 
-    loadCart();
+    document.addEventListener('DOMContentLoaded', loadCart);
   </script>
 </body>
 </html>

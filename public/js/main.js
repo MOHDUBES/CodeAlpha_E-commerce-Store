@@ -1,6 +1,30 @@
 // Shared utilities
 const API = '/api';
 
+// --- Cross-Port Auth Sync ---
+const urlParams = new URLSearchParams(window.location.search);
+const tokenParam = urlParams.get('token');
+const userParam = urlParams.get('user');
+const fromSellerParam = urlParams.get('from_seller');
+
+if (tokenParam && userParam) {
+  localStorage.setItem('token', tokenParam);
+  try {
+    localStorage.setItem('user', decodeURIComponent(userParam));
+  } catch (e) {}
+}
+
+if (fromSellerParam) {
+  sessionStorage.setItem('from_seller', 'true');
+}
+
+if (tokenParam || fromSellerParam) {
+  const cleanUrl = window.location.protocol + '//' + window.location.host + window.location.pathname;
+  window.history.replaceState({ path: cleanUrl }, '', cleanUrl);
+}
+// -----------------------------
+
+
 // Theme management
 function applyTheme(theme) {
   document.documentElement.setAttribute('data-theme', theme);
@@ -101,16 +125,40 @@ async function addToCart(productId, qty = 1) {
 function updateNavAuth() {
   const user = getUser();
   const authEl = document.getElementById('nav-auth');
-  const heroBtn = document.getElementById('hero-register-btn');
-    if (user) {
-      document.getElementById('nav-auth').innerHTML = `
-        <span class="hide-mobile" style="font-size:0.9rem;font-weight:500">Hi, ${user.name.split(' ')[0]}</span>
-        <button onclick="window.location='/settings'" class="btn btn-outline btn-sm" style="margin-left:0.5rem; border:none; padding: 0.3rem;">⚙️</button>
+  if (!authEl) return;
+  
+  if (user) {
+    let dashboardLink = '';
+    if (user.role === 'seller' && sessionStorage.getItem('from_seller') === 'true') {
+      // Create link to port 3001 with auth tokens
+      const token = localStorage.getItem('token') || '';
+      const userStr = encodeURIComponent(localStorage.getItem('user') || '');
+      dashboardLink = `
+        <a href="http://127.0.0.1:3001/?token=${token}&user=${userStr}" class="nav-icon-btn" style="color: #D884E0;">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><line x1="3" y1="9" x2="21" y2="9"></line></svg>
+          <span class="hide-mobile" style="color: #D884E0;">Dashboard</span>
+        </a>
       `;
-    } else {
-      document.getElementById('nav-auth').innerHTML = `<button onclick="window.location='/login'" class="btn btn-outline btn-sm">Login</button>`;
     }
+    
+    authEl.innerHTML = `
+      <div style="display:flex;align-items:center;gap:1.25rem">
+        ${dashboardLink}
+        <a href="/settings" class="nav-icon-btn">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+          <span class="hide-mobile">${user.name.split(' ')[0]}</span>
+        </a>
+      </div>
+    `;
+  } else {
+    authEl.innerHTML = `
+      <a href="/login" class="nav-icon-btn">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+        <span class="hide-mobile">Login</span>
+      </a>
+    `;
   }
+}
 
 // Global Wishlist handler
 let userWishlistIds = [];
@@ -227,21 +275,28 @@ function renderStars(rating) {
 // Navbar HTML
 function renderNavbar(activePage = '') {
   return `
-    <nav class="navbar">
-      <a href="/" style="text-decoration:none">
-        <div class="navbar-brand">ShopVerse</div>
-      </a>
-      <div class="navbar-search">
-        <input type="text" class="search-input" id="search-input" placeholder="Search for products, brands and more..." 
+  <header class="site-header">
+    <nav class="top-nav">
+      <a href="/" class="brand"><span class="brand-text">Shop<span class="brand-accent">Verse</span></span></a>
+      <div class="search-wrap">
+        <svg class="search-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+        <input type="text" class="search-box" id="search-input" placeholder="Search for products, brands and more..." 
             ${activePage === 'home' ? 'oninput="filterProducts()"' : 'onkeydown="if(event.key===\'Enter\') window.location=\'/?q=\'+this.value"'}>
       </div>
-      <div class="navbar-actions" style="gap: 0.5rem;">
+      <div class="nav-actions">
         <div id="nav-auth"></div>
-        <a href="/cart" class="cart-btn" style="padding: 0.4rem 0.6rem;">
-          🛒<span class="hide-mobile" style="margin-left:4px">Cart</span> <span class="cart-count" id="cart-badge" style="display:none">0</span>
+        <a href="/wishlist" class="nav-icon-btn">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
+          <span class="hide-mobile">Wishlist</span>
+        </a>
+        <a href="/cart" class="nav-icon-btn cart-nav">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/></svg>
+          <span class="hide-mobile">Bag</span>
+          <span class="cart-count" style="display:none">0</span>
         </a>
       </div>
     </nav>
+  </header>
   `;
 }
 

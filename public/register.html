@@ -5,13 +5,108 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Register — ShopVerse</title>
   <link rel="icon" type="image/svg+xml" href="/favicon.svg">
-  <link rel="stylesheet" href="/css/style.css">
+  <link rel="stylesheet" href="/css/style.css?v=43">
+  <style>
+    body {
+      background: var(--bg-base);
+      font-family: 'Inter', -apple-system, sans-serif;
+      margin: 0;
+      color: var(--text);
+    }
+    .auth-layout {
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 2rem;
+      background: var(--bg-base);
+    }
+    .auth-card {
+      background: var(--bg-surface);
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      padding: 3rem 2.5rem;
+      width: 100%;
+      max-width: 400px;
+      box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+    }
+    .auth-logo {
+      font-size: 2.2rem;
+      font-weight: 800;
+      text-align: center;
+      background: linear-gradient(to right, #D884E0, #F79CD4);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      margin-bottom: 0.2rem;
+      text-decoration: underline;
+      text-decoration-color: rgba(216, 132, 224, 0.4);
+      text-underline-offset: 4px;
+    }
+    .auth-subtitle {
+      text-align: center;
+      color: var(--text-2);
+      font-size: 0.95rem;
+      margin-bottom: 2.5rem;
+    }
+    .form-group {
+      margin-bottom: 1.25rem;
+    }
+    .form-label {
+      display: block;
+      color: var(--text-2);
+      font-size: 0.85rem;
+      font-weight: 500;
+      margin-bottom: 0.5rem;
+    }
+    .form-input {
+      width: 100%;
+      background: var(--bg-raised);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 0.8rem 1rem;
+      color: var(--text);
+      font-size: 0.95rem;
+      outline: none;
+      transition: border-color 0.2s;
+      box-sizing: border-box;
+    }
+    .form-input:focus {
+      border-color: #8E54E9;
+    }
+    .auth-btn {
+      width: 100%;
+      background: linear-gradient(to right, #7b58f4, #eb699a);
+      color: var(--text);
+      border: none;
+      border-radius: 10px;
+      padding: 0.9rem;
+      font-size: 1rem;
+      font-weight: 600;
+      cursor: pointer;
+      margin-top: 1rem;
+      transition: opacity 0.2s;
+    }
+    .auth-btn:hover {
+      opacity: 0.9;
+    }
+    .auth-switch {
+      text-align: center;
+      margin-top: 1.5rem;
+      color: var(--text-2);
+      font-size: 0.9rem;
+    }
+    .auth-switch a {
+      color: #6a5fe8;
+      font-weight: 600;
+      text-decoration: none;
+    }
+  </style>
 </head>
 <body>
-  <div class="auth-wrapper">
+  <div class="auth-layout">
     <div class="auth-card">
-      <a href="/" style="display:block">
-        <div class="auth-logo">️ ShopVerse</div>
+      <a href="/" style="text-decoration: none; display: block;">
+        <div class="auth-logo">ShopVerse</div>
       </a>
       <p class="auth-subtitle">Create your account and start shopping!</p>
 
@@ -32,23 +127,44 @@
           <label class="form-label">Confirm Password</label>
           <input type="password" id="reg-confirm" class="form-input" placeholder="Repeat password" required>
         </div>
+        <div id="seller-checkbox-container" class="form-group" style="display: none;">
+          <input type="checkbox" id="reg-seller" style="width: 1rem; height: 1rem; accent-color: #8E54E9; cursor: pointer;">
+          <label for="reg-seller" class="form-label" style="margin: 0; cursor: pointer; font-size: 0.9rem;">Register as a Seller</label>
+        </div>
 
-        <div id="reg-error" style="display:none;color:var(--danger);font-size:0.85rem;margin-bottom:1rem;padding:0.7rem;background:rgba(255,77,109,0.1);border-radius:8px;border:1px solid rgba(255,77,109,0.3)"></div>
+        <div id="reg-error" style="display:none;color:#ff4d6d;font-size:0.85rem;margin-bottom:1rem;padding:0.7rem;background:rgba(255,77,109,0.1);border-radius:8px;border:1px solid rgba(255,77,109,0.3)"></div>
 
-        <button type="submit" class="btn btn-primary" id="reg-btn" style="width:100%;justify-content:center">
+        <button type="submit" class="auth-btn" id="reg-btn">
           Create Account →
         </button>
       </form>
 
       <div class="auth-switch">
-        Already have an account? <a href="/login">Sign In</a>
+        Already have an account? <a href="/login" id="login-link">Sign In</a>
       </div>
     </div>
   </div>
 
-  <script src="/js/main.js?v=2"></script>
+  <script src="/js/main.js?v=20"></script>
   <script>
-    if (isLoggedIn()) window.location = '/';
+    const urlParams = new URLSearchParams(window.location.search);
+    const isSellerUrl = urlParams.get('role') === 'seller';
+
+    if (isSellerUrl) {
+      document.getElementById('reg-seller').checked = true;
+      document.querySelector('.auth-subtitle').textContent = 'Create your Seller account and start selling!';
+      document.querySelector('.auth-logo').innerHTML = 'ShopVerse <span style="font-size:1.2rem; color:var(--text-2); font-weight: 500;">Seller</span>';
+      document.getElementById('login-link').href = '/login?role=seller';
+    }
+
+    if (isLoggedIn()) {
+      const u = getUser();
+      if (isSellerUrl && u && u.role === 'seller') {
+        window.location = '/seller-dashboard';
+      } else {
+        window.location = '/';
+      }
+    }
 
     async function handleRegister(e) {
       e.preventDefault();
@@ -69,13 +185,15 @@
       btn.textContent = '⏳ Creating account...';
 
       try {
+        const isSeller = document.getElementById('reg-seller').checked;
         const res = await fetch(`${API}/auth/register`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
             name: document.getElementById('reg-name').value,
             email: document.getElementById('reg-email').value,
-            password
+            password,
+            isSeller
           })
         });
         const data = await res.json();
@@ -83,7 +201,13 @@
           localStorage.setItem('token', data.token);
           localStorage.setItem('user', JSON.stringify(data.user));
           showToast('Welcome to ShopVerse! ', 'success');
-          setTimeout(() => window.location = '/', 1000);
+          setTimeout(() => {
+            if (data.user.role === 'seller' && isSellerUrl) {
+              window.location.href = '/seller-dashboard';
+            } else {
+              window.location.href = '/';
+            }
+          }, 1000);
         } else {
           errEl.textContent = data.error || 'Registration failed';
           errEl.style.display = 'block';

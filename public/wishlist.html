@@ -5,84 +5,89 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>My Wishlist — ShopVerse</title>
   <link rel="icon" type="image/svg+xml" href="/favicon.svg">
-  <link rel="stylesheet" href="/css/style.css">
+  <link rel="stylesheet" href="/css/style.css?v=43">
+  <script>
+    if (localStorage.getItem('sv_design_v') !== '3') {
+      localStorage.setItem('theme', 'dark');
+      localStorage.setItem('sv_design_v', '3');
+    }
+  </script>
+  <style>
+    .page-wrap { max-width: 1400px; margin: 0 auto; padding: 2rem 2rem 5rem; }
+    .page-back { margin-bottom: 1.5rem; }
+    .wishlist-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(215px, 1fr));
+      gap: 1.25rem;
+    }
+    .empty-box {
+      display: flex; flex-direction: column; align-items: center; justify-content: center;
+      padding: 5rem 2rem; text-align: center;
+      background: var(--bg-surface); border: 1px solid var(--border);
+      border-radius: 12px; margin: 2rem auto; max-width: 600px;
+    }
+    .empty-box .e-icon { font-size: 4rem; margin-bottom: 1.5rem; }
+  </style>
 </head>
 <body>
   <div id="navbar-root"></div>
-
-  <div class="container" style="max-width: 1400px; padding-top: 2rem;">
-    <div class="page-header">
-      <div style="margin-bottom: 1rem;"><a href="/" class="btn btn-outline btn-sm">&larr; Back to Shopping</a></div>
-      <h1 class="page-title">❤️ My Wishlist</h1>
-      <p class="page-subtitle" id="wishlist-subtitle">Items you've saved for later</p>
+  <div class="page-wrap">
+    <div class="page-back">
+      <a href="/" class="btn btn-outline btn-sm">← Back to Shopping</a>
     </div>
-
+    <h1 class="page-title">❤️ My Wishlist</h1>
+    <p class="page-subtitle" id="wishlist-subtitle">Loading your saved items...</p>
+    
     <div class="loading" id="loading">
       <div class="dot"></div><div class="dot"></div><div class="dot"></div>
     </div>
-    
-    <div class="products-grid" id="wishlist-grid" style="display:none; margin-bottom: 4rem;"></div>
-    
-    <div id="empty-wishlist" class="empty-state" style="display:none; margin-bottom: 4rem;">
-      <div class="empty-icon" style="font-size: 3rem;">🤍</div>
-      <div class="empty-title">Your wishlist is empty</div>
-      <div class="empty-text">Save items that you like and buy them later.</div>
-      <a href="/" class="btn btn-primary" style="margin-top: 1rem; display: inline-block;">Discover Products</a>
+    <div class="wishlist-grid" id="wishlist-grid" style="display:none"></div>
+    <div id="empty-wishlist" class="empty-box" style="display:none">
+      <div class="e-icon">🤍</div>
+      <h3>Your wishlist is empty</h3>
+      <p>Save items you love and buy them later.</p>
+      <a href="/" class="btn btn-primary">Discover Products</a>
     </div>
   </div>
 
-  <script src="/js/main.js?v=6"></script>
+  <script src="/js/main.js?v=20"></script>
   <script>
     async function init() {
-      if (!isLoggedIn()) {
-        window.location = '/login';
-        return;
-      }
-      document.getElementById('navbar-root').innerHTML = renderNavbar('wishlist');
+      if (!isLoggedIn()) { window.location = '/login'; return; }
+      document.getElementById('navbar-root').innerHTML = renderNavbar();
       updateNavAuth();
       updateCartCount();
-      await fetchUserWishlist(); // load global wishlist first
+      await fetchUserWishlist();
       await loadWishlistPage();
     }
-
     async function loadWishlistPage() {
       const loading = document.getElementById('loading');
       const grid = document.getElementById('wishlist-grid');
       const empty = document.getElementById('empty-wishlist');
       const subtitle = document.getElementById('wishlist-subtitle');
-
       try {
-        const res = await fetch(`${API}/wishlist`, {
-          headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` }
-        });
+        const res = await fetch(`${API}/wishlist`, { headers: getHeaders() });
         const data = await res.json();
-        
         loading.style.display = 'none';
-
+        
         if (!data.wishlist || data.wishlist.length === 0) {
-          grid.style.display = 'none';
-          empty.style.display = 'flex';
-          subtitle.textContent = "0 items saved";
+          grid.style.display = 'none'; empty.style.display = 'flex';
+          subtitle.textContent = '0 items saved';
         } else {
-          grid.style.display = 'grid';
-          empty.style.display = 'none';
-          subtitle.textContent = `${data.wishlist.length} items saved`;
+          grid.style.display = 'grid'; empty.style.display = 'none';
+          subtitle.textContent = `${data.wishlist.length} item(s) saved`;
           grid.innerHTML = data.wishlist.map(createProductCardHTML).join('');
         }
-      } catch (err) {
-        showToast('Failed to load wishlist', 'error');
+      } catch {
         loading.style.display = 'none';
+        showToast('Failed to load wishlist', 'error');
       }
     }
-
-    // Override toggleWishlist slightly so that removing from wishlist re-renders the page
     const originalToggle = toggleWishlist;
-    window.toggleWishlist = async function(productId, btnElement) {
-      await originalToggle(productId, btnElement);
-      // Re-render
-      await loadWishlistPage();
+    window.toggleWishlist = async function(pid, btn) {
+      await originalToggle(pid, btn);
+      setTimeout(() => loadWishlistPage(), 300);
     };
-
     document.addEventListener('DOMContentLoaded', init);
   </script>
 </body>

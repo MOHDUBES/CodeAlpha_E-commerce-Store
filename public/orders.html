@@ -211,6 +211,12 @@
                   <div class="info-value" style="color: var(--accent);">${formatPrice(order.total)}</div>
                 </div>
                 <div>
+                  <div class="info-label">PAYMENT</div>
+                  <div class="info-value" style="color: #1ed760; font-weight: 700;">
+                    ${order.payment_method === 'upi' ? 'UPI (Paid)' : (order.payment_method === 'card' ? 'Card (Paid)' : 'Cash on Delivery')}
+                  </div>
+                </div>
+                <div>
                   <div class="info-label">SHIP TO</div>
                   <div class="info-value" style="color: var(--text-secondary);">${order.name}</div>
                 </div>

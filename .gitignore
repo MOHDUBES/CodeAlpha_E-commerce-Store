@@ -1,3 +1,9 @@
 node_modules/
 .env
 ecommerce.json
+
+/generated/prisma
+seller_debug.log
+dashboard-proof.png
+_backups/
+public/uploads/
