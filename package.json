@@ -7,7 +7,8 @@
     "start": "node server.store.js",
     "dev": "nodemon server.seller.js",
     "both": "concurrently \"npm start\" \"npm run dev\"",
-    "test": "jest"
+    "test": "jest",
+    "postinstall": "prisma generate"
   },
   "dependencies": {
     "@fortawesome/fontawesome-free": "latest",
@@ -25,11 +26,11 @@
     "jest": "latest",
     "jsonwebtoken": "^9.0.3",
     "multer": "^2.1.1",
-    "supertest": "latest"
+    "supertest": "latest",
+    "prisma": "^6.19.3"
   },
   "devDependencies": {
     "concurrently": "^10.0.3",
-    "nodemon": "^3.1.14",
-    "prisma": "^6.19.3"
+    "nodemon": "^3.1.14"
   }
 }
